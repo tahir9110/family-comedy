@@ -14,12 +14,12 @@ OPENAI_KEY_PATH = ROOT_DIR / "openai key.txt"
 GEMINI_KEY_PATH = ROOT_DIR / "aistuio free key.txt"
 
 CHARACTERS = {
-    "@Shani": {
-        "name": "Shani",
-        "tag": "@Shani",
-        "role": "The Witty Jugaadu Hero",
-        "age": "22-23",
-        "description": "Keep facial features consistent with the attached @Shani references. @Shani is a 23-year-old Pakistani young man with stylish textured hair, lively expressive eyes, sharp jawline with light shadow stubble, wearing a casual navy blue henley shirt with sleeves rolled up to mid-forearm. Highly expressive, energetic, and playful comedic body language."
+    "@Aqib": {
+        "name": "Aqib",
+        "tag": "@Aqib",
+        "role": "The Witty Hero (Brother Aqib)",
+        "age": "24-25",
+        "description": "Keep 1:1 facial identity and likeness strictly identical to the attached @Aqib reference photo. @Aqib is a Pakistani young man in his mid-20s with an oval-round face, sturdy build, warm olive South Asian complexion, jet black side-swept hair with a subtle forehead fringe, dark expressive almond eyes, natural thick eyebrows, a distinct neat dark mustache, and a trimmed chinstrap beard running along the jawline with clean cheeks. He wears a casual navy blue henley shirt with sleeves rolled up to mid-forearm. Highly expressive, energetic comedic body language."
     },
     "@Mani": {
         "name": "Mani",
@@ -70,20 +70,20 @@ def infer_staging(location, prop):
 
     if "bike" in loc_l or "bike" in prop_l or "motorcycle" in loc_l or "motorcycle" in prop_l or "petrol" in prop_l:
         return (
-            "Physical Staging: @Shani is physically mounted and seated on the black saddle of the parked motorcycle, "
-            "his hands resting on the handlebars and feet on the ground, leaning over the tank with an innocent, tired comedic expression. "
+            "Physical Staging: @Aqib is physically mounted and seated on the black saddle of the parked motorcycle, "
+            "his hands resting on the chrome handlebars and feet touching the ground, leaning slightly over the tank with an innocent, tired comedic expression. "
             "@Mani stands right beside the front wheel of the motorbike, leaning casually against the roadside curb with a sarcastic, mocking smirk, "
-            "looking down toward @Shani. Both angled in an open 3/4 stance toward the camera. Friendly buddy humor, NO fighting."
+            "looking down toward @Aqib. Both angled in an open 3/4 stance toward the camera. Friendly buddy humor, NO fighting."
         )
     elif "dhaba" in loc_l or "chai" in loc_l or "tea" in prop_l:
         return (
-            "Physical Staging: Both @Shani and @Mani are comfortably seated on a rustic wooden bench at a 3/4 angle to the camera. "
+            "Physical Staging: Both @Aqib and @Mani are comfortably seated on a rustic wooden bench at a 3/4 angle to the camera. "
             "Each friend holds a clear glass cup of hot steaming doodh patti tea. Relaxed seated posture, laughing and bantering like close friends."
         )
     elif "fan" in prop_l or "jugaad" in loc_l:
         return (
-            "Physical Staging: @Shani stands under the ceiling fan holding a long broomstick handle reaching up to nudge the fan blade with serious comic focus. "
-            "@Mani sits relaxed nearby on a bed or chair, chuckling in disbelief at Shani's absurd jugaad. Relaxed funny buddy interaction."
+            "Physical Staging: @Aqib stands under the ceiling fan holding a long broomstick handle reaching up to nudge the fan blade with serious comic focus. "
+            "@Mani sits relaxed nearby on a bed or chair, chuckling in disbelief at Aqib's absurd jugaad. Relaxed funny buddy interaction."
         )
     elif "sofa" in loc_l or "living" in loc_l or "room" in loc_l:
         return (
@@ -97,18 +97,26 @@ def infer_staging(location, prop):
         )
 
 def build_flow_prompt(speaker_00, dialogue_00, speaker_03, dialogue_03, location, prop, staging=None):
-    shani_desc = CHARACTERS["@Shani"]["description"]
+    aqib_desc = CHARACTERS["@Aqib"]["description"]
     mani_desc = CHARACTERS["@Mani"]["description"]
 
-    # Formatting speaker tags
-    s1_tag = "@Shani" if "shani" in speaker_00.lower() else ("@Mani" if "mani" in speaker_00.lower() else speaker_00)
-    s2_tag = "@Mani" if "mani" in speaker_03.lower() else ("@Shani" if "shani" in speaker_03.lower() else speaker_03)
+    # Formatting speaker tags (support aqib, shani fallback)
+    def map_tag(spk):
+        s = spk.lower()
+        if "aqib" in s or "shani" in s:
+            return "@Aqib"
+        elif "mani" in s:
+            return "@Mani"
+        return spk
+
+    s1_tag = map_tag(speaker_00)
+    s2_tag = map_tag(speaker_03)
 
     if not staging:
         staging = infer_staging(location, prop)
 
     prompt = (
-        f"{shani_desc} {mani_desc} "
+        f"{aqib_desc} {mani_desc} "
         f"Setting: Pakistani {location} with {prop} visible in the scene. "
         f"{staging} "
         f"{DEFAULT_PROMPT_CONSTRAINTS} "
@@ -122,7 +130,7 @@ def generate_prompt_for_joke(joke_dict):
     sc1 = joke_dict.get("scene_1", {})
     spk1 = sc1.get("speaker_at_00", "Mani")
     dia1 = sc1.get("dialogue_at_00", "")
-    spk2 = sc1.get("speaker_at_03", "Shani")
+    spk2 = sc1.get("speaker_at_03", "Aqib")
     dia2 = sc1.get("dialogue_at_03", "")
     loc = joke_dict.get("location", "Streetside curb near a parked Honda CD70 motorbike")
     prp = joke_dict.get("prop", "Red Honda CD70 motorbike")
