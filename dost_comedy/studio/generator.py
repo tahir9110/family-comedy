@@ -19,7 +19,7 @@ CHARACTERS = {
         "tag": "@Aqib",
         "role": "The Witty Hero (Brother Aqib)",
         "age": "24-25",
-        "description": "Keep 1:1 facial identity and likeness strictly identical to the attached @Aqib reference photo. @Aqib is a Pakistani young man in his mid-20s with an oval-round face, sturdy build, warm olive South Asian complexion, jet black side-swept hair with a subtle forehead fringe, dark expressive almond eyes, and natural thick eyebrows. Facial hair: A subtle, finely trimmed short light mustache sitting neatly strictly above the upper lip (NOT thick, NOT bushy, NOT drooping at the corners, NO horseshoe shape), and a neat light chinstrap beard running along the jawline with clean shaven cheeks. He wears a casual navy blue henley shirt with sleeves rolled up to mid-forearm. Highly expressive, energetic comedic body language."
+        "description": "Keep 1:1 facial identity and likeness strictly identical to the attached @Aqib reference photo. @Aqib is a Pakistani young man in his mid-20s with an oval-round face, sturdy build, warm olive South Asian complexion, jet black side-swept hair with a subtle forehead fringe, dark expressive almond eyes, and natural thick eyebrows. Completely clean-shaven face with smooth skin, strictly NO mustache, NO beard, NO goatee, and NO stubble. He wears a casual navy blue henley shirt with sleeves rolled up to mid-forearm. Highly expressive, energetic comedic body language."
     },
     "@Mani": {
         "name": "Mani",
