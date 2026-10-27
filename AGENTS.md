@@ -5,7 +5,7 @@ This repository contains the full automated production pipeline for Pakistani co
 ---
 
 ## 🚀 Studios & Servers
-- **Family Comedy Studio**: `http://localhost:8000/` (Characters: `@Abbu`, `@Ammi`, `@Beta`)
+- **Family Comedy Studio**: `http://localhost:8055/` (Characters: `@Abbu`, `@Ammi`, `@Beta`)
   - Server file: [studio/server.py](file:///d:/Family%20Comedy/studio/server.py)
   - Generator logic: [studio/generator.py](file:///d:/Family%20Comedy/studio/generator.py)
 - **Larka Larki Studio**: `http://localhost:8001/` (Characters: `@Larka`, `@Larki`)

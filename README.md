@@ -7,7 +7,7 @@ Automated AI-assisted script-to-video workflow and prompt generation studio for 
 ## 🌟 Key Features
 
 1. **Dual Web Studios**:
-   - **Family Comedy Studio** (`http://localhost:8000`): Starring `@Abbu`, `@Ammi`, and `@Beta`.
+   - **Family Comedy Studio** (`http://localhost:8055`): Starring `@Abbu`, `@Ammi`, and `@Beta`.
    - **Larka Larki Studio** (`http://localhost:8001`): Starring `@Larka` and `@Larki`.
 2. **Google Flow Timing & Scene Management**:
    - Fixed 10.01-second clip budgeting (1 clip for 3-4 line jokes, 2 clips for 2 scenes, 3 clips max).
@@ -38,8 +38,8 @@ Automated AI-assisted script-to-video workflow and prompt generation studio for 
 ### 2. Run Studios
 Double-click `start_studio.bat` or run:
 ```bash
-# Terminal 1 - Family Comedy Studio (Port 8000)
-python -m studio.server
+# Terminal 1 - Family Comedy Studio (Port 8055)
+python -m uvicorn studio.server:app --host 127.0.0.1 --port 8055 --reload
 
 # Terminal 2 - Larka Larki Studio (Port 8001)
 python -m larka_larki.studio.server
