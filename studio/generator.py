@@ -166,21 +166,30 @@ def get_wardrobe_by_id(wardrobe_id=None):
 
 def get_family_speaker_info(name):
     clean = str(name).strip().lower()
-    if any(k in clean for k in ["ammi", "mother", "maa", "mom"]):
+    if any(k in clean for k in ["ammi", "mother", "maa", "mom", "bahu"]):
         return {
             "tag": "@Ammi",
             "desc": "the dramatic mother (Ammi)",
             "pronoun": "her",
             "screen_pos": "in the CENTER"
         }
-    elif any(k in clean for k in ["abbu", "father", "baap", "dad"]):
+    elif any(k in clean for k in ["abbu", "father", "baap", "dad", "sasur"]):
         return {
             "tag": "@Abbu",
             "desc": "the strict older father (Abbu)",
             "pronoun": "his",
             "screen_pos": "on screen-RIGHT"
         }
+    elif any(k in clean for k in ["boss", "manager", "officer", "doctor", "teacher", "ustaad", "dukaandar", "shopkeeper", "police", "interviewer"]):
+        tag_name = clean.capitalize()
+        return {
+            "tag": f"@{tag_name}",
+            "desc": f"the strict {clean} (authority figure)",
+            "pronoun": "his",
+            "screen_pos": "on screen-RIGHT"
+        }
     else:
+        # Relatable young protagonist: Mulazim, Employee, Student, Patient, Customer, or Beta
         return {
             "tag": "@Beta",
             "desc": "the 25-year-old grown adult son (Beta)",
@@ -327,7 +336,28 @@ def format_family_multi_scene_prompts(data, wardrobe=None):
                 pos_desc = "@Abbu is in CENTER frame looking thoughtful or amused. Neither @Ammi nor @Beta are visible in this frame"
                 dialogue_instruction = "Dialogue script (Abbu speaks with witty comedic delivery):\n"
 
-            # 7. Default: All Three Together
+            # 7. Workplace / External Scene (@Beta paired with @Boss, @Doctor, @Teacher, etc.)
+            external_speakers = [s for s in speakers_in_scene if s not in ["@Beta", "@Ammi", "@Abbu"]]
+            if has_beta and external_speakers and not has_ammi and not has_abbu:
+                ext_tag = external_speakers[0]
+                chars_present = f"@Beta reference"
+                if "boss" in ext_tag.lower():
+                    wardrobe_desc = f"@Beta wears a slightly crumpled light-blue office shirt with dark trousers. Alongside him is {ext_tag}, a stern 50-year-old Pakistani corporate manager wearing a formal charcoal suit and tie"
+                    pos_desc = (
+                        f"Across the screen: {ext_tag} sits behind the executive desk on screen-RIGHT, while @Beta stands nervously in front on screen-LEFT facing {ext_tag}. "
+                        f"DO NOT swap their positions. Neither @Ammi nor @Abbu are in this frame. "
+                        f"FACIAL EMOTION LOCK: Characters maintain expressive comedic facial reactions (angry boss, frightened/fidgeting employee), never smiling at the insult"
+                    )
+                else:
+                    ext_name = ext_tag.replace("@", "")
+                    wardrobe_desc = f"@Beta wears {wardrobe['beta']}. Alongside him is {ext_tag}, an authoritative Pakistani {ext_name}"
+                    pos_desc = (
+                        f"Across the screen: {ext_tag} is on screen-RIGHT as the authority figure, while @Beta is on screen-LEFT facing {ext_tag}. "
+                        f"DO NOT swap their positions. Neither @Ammi nor @Abbu are in this frame"
+                    )
+                dialogue_instruction = f"Dialogue script ({ext_tag} and @Beta face each other with fast comedic timing, never look at camera):\n"
+
+            # 8. Default: All Three Together (Family Sitcom)
             else:
                 chars_present = "@Abbu, @Ammi, and @Beta"
                 wardrobe_desc = f"@Beta wears {wardrobe['beta']}, @Ammi wears {wardrobe['ammi']}, @Abbu wears {wardrobe['abbu']}"
@@ -339,10 +369,16 @@ def format_family_multi_scene_prompts(data, wardrobe=None):
             for sl in script_lines:
                 dialogue_script += f'{sl["tag"]}: "{sl["line"]}"\n'
 
+            loc_clean = location.lower()
+            if any(k in loc_clean for k in ["office", "cabin", "clinic", "hospital", "shop", "street", "college", "school", "classroom"]):
+                setting_prefix = f"Pakistani {location.lower()} setting"
+            else:
+                setting_prefix = f"Pakistani house {location.lower()} setting"
+
             prompt_text = (
-                f"Keep their facial features consistent with the attached {chars_present} references. "
+                f"Keep their facial features consistent with the attached {chars_present}. "
                 f"{wardrobe_desc}. "
-                f"Pakistani house {location.lower()} setting{prop_desc}. "
+                f"{setting_prefix}{prop_desc}. "
                 f"{pos_desc}. "
                 f"Interior decor constraint: Plain clean walls with modern geometric wallpaper or simple landscape painting only. Absolutely NO Arabic script, NO calligraphy wall frames, NO religious verses, and NO text on walls. "
                 f"Fixed medium-wide camera shot, stationary camera, no cuts, no close-ups, no reverse angles. "
@@ -529,9 +565,17 @@ CRITICAL STRICT RULES:
      * "Home Courtyard (Sehan) / Veranda" (under open sky with potted plants and steel glasses)
      * "Rooftop Terrace at Sunset" (with charpai, tea thermos, and laundry drying line in background)
    - "title": Short catchy comedy title (Urdu + Roman)
-   - "location": Descriptive setting matching the script's actual narrative (e.g. "Hallway near bottom of staircase looking up")
-   - "staging": Brief note on who is present and what they are doing (e.g. "@Ammi standing near stairs looking up shouting, @Abbu seated on chair watching")
-   - "prop": Natural props fitting that location in English (e.g. "Wooden staircase railing, morning newspaper, and tea cup")
+   - "location": Descriptive setting matching the script's actual narrative (e.g. "Hallway near bottom of staircase looking up", "Pakistani corporate office cabin with executive desk and laptop", "Doctor clinic", "Street dhaba")
+   - "staging": Brief note on who is present and what they are doing (e.g. "@Ammi standing near stairs looking up shouting, @Abbu seated on chair watching", "@Boss seated behind desk shouting angrily, @Beta standing nervously in front")
+   - "prop": Natural props fitting that location in English (e.g. "Wooden staircase railing, morning newspaper, and tea cup", "Executive wooden desk, laptop, office files, and office chair")
+7. SITCOM UNIVERSE CASTING RULE (WORKPLACE & EXTERNAL JOKES):
+   - Our sitcom series stars @Beta (the 25-year-old young adult son / relatable protagonist), @Abbu (father / elder figure), and @Ammi (mother).
+   - When the user submits external, workplace, or non-family comedy scripts (e.g., Boss vs Employee/Mulazim, Doctor vs Patient, Teacher vs Student, Police vs Chor, Shopkeeper vs Customer):
+     * ALWAYS CAST @Beta as the young protagonist (Employee/Mulazim, Patient, Student, Customer, etc.)!
+     * In the "speaker" field, map the young employee/protagonist strictly to "Beta"!
+     * In the "speaker" field, map the authority figure to "Boss" (or "Doctor", "Teacher", etc.)!
+     * Example: For a Boss vs Mulazim joke, the speakers MUST be "Boss" and "Beta"!
+     * Set "location" to the workplace/external setting (e.g. "Corporate office cabin with executive desk and laptop")!
 
 Respond ONLY with a valid JSON object matching this schema:
 {{
