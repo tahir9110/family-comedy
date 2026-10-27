@@ -244,25 +244,29 @@ def format_family_multi_scene_prompts(data, wardrobe=None):
         has_ammi = "@Ammi" in speakers_in_scene
         has_abbu = "@Abbu" in speakers_in_scene
 
-        # If Beta is NOT in this scene (e.g. Ammi calling upstairs to him)
-        staging_text = sc.get("staging") or data.get("staging")
+        staging_text = sc.get("staging") or data.get("staging") or ""
+        is_staircase_scene = (
+            "stair" in location.lower() or 
+            "steps" in location.lower() or 
+            "stair" in str(staging_text).lower()
+        )
 
         if num == 1:
             prop_desc = f" with {prop.lower()} featured in the scene" if prop else ""
-            if has_ammi and not has_beta:
-                # Over-the-shoulder / Back view: camera is behind Ammi, looking up the staircase with her
-                chars_present = "@Ammi"
-                wardrobe_desc = f"@Ammi wears {wardrobe['ammi']}"
+            
+            # 1. Abbu & Ammi Duo (Husband & Wife banter - e.g. door conversation, living room, kitchen)
+            if has_abbu and has_ammi and not has_beta:
+                chars_present = "@Abbu and @Ammi"
+                wardrobe_desc = f"@Ammi wears {wardrobe['ammi']}, @Abbu wears {wardrobe['abbu']}"
                 pos_desc = (
-                    "Over-the-shoulder rear shot / back view from behind @Ammi: The camera is placed directly behind @Ammi, "
-                    "showing the back of her head and shoulders. @Ammi stands at the bottom step with her entire body and front facing directly into the wooden staircase, "
-                    "looking straight UP at the ascending stairs toward the second-floor landing. "
-                    "Her back is to the camera throughout the entire clip. Her face and gaze are directed straight up the stairs. "
-                    "Neither @Abbu nor @Beta are visible in this frame"
+                    "Across the screen: @Ammi is on screen-LEFT facing @Abbu, while @Abbu is on screen-RIGHT facing @Ammi. "
+                    "Both characters stand or sit facing each other engaged in conversation. DO NOT swap their positions. @Beta is NOT in this frame. "
+                    "FACIAL EMOTION LOCK: Characters maintain expressive comedic facial reactions consistent with the punchline (shocked, exasperated or smirking), never laughing at their own insult"
                 )
-                dialogue_instruction = "Dialogue script (@Ammi shouts straight UP the stairs from behind camera perspective):\n"
-            elif has_beta and has_abbu and not has_ammi:
-                # Beta and Abbu duo in the living room
+                dialogue_instruction = "Dialogue script (@Abbu and @Ammi face each other with fast comedic timing, never look at camera):\n"
+
+            # 2. Abbu & Beta Duo (Father & Son banter)
+            elif has_abbu and has_beta and not has_ammi:
                 chars_present = "@Abbu and @Beta"
                 wardrobe_desc = f"@Beta wears {wardrobe['beta']}, @Abbu wears {wardrobe['abbu']}"
                 pos_desc = (
@@ -271,14 +275,60 @@ def format_family_multi_scene_prompts(data, wardrobe=None):
                     "FACIAL EMOTION LOCK: @Beta must NOT smile or laugh at the punchline; @Beta keeps a crestfallen, offended, or shocked reaction throughout. Only @Abbu chuckles or smiles"
                 )
                 dialogue_instruction = "Dialogue script (@Beta and @Abbu face each other with fast comedic timing, never look at camera):\n"
+
+            # 3. Ammi & Beta Duo (Mother & Son)
+            elif has_ammi and has_beta and not has_abbu:
+                chars_present = "@Ammi and @Beta"
+                wardrobe_desc = f"@Beta wears {wardrobe['beta']}, @Ammi wears {wardrobe['ammi']}"
+                if is_staircase_scene:
+                    pos_desc = (
+                        "Over-the-shoulder rear shot / back view from behind @Ammi: The camera is placed directly behind @Ammi, "
+                        "showing the back of her head and shoulders. @Ammi stands at the bottom step with her entire body and front facing directly into the wooden staircase, "
+                        "looking straight UP at the ascending stairs toward the second-floor landing. "
+                        "Her back is to the camera throughout the entire clip. Her face and gaze are directed straight up the stairs. "
+                        "@Abbu is NOT in this frame"
+                    )
+                    dialogue_instruction = "Dialogue script (@Ammi shouts straight UP the stairs from behind camera perspective):\n"
+                else:
+                    pos_desc = (
+                        "Across the screen: @Beta stands on screen-LEFT facing @Ammi, while @Ammi stands on screen-RIGHT facing @Beta. "
+                        "DO NOT swap their positions. @Abbu is NOT in this frame"
+                    )
+                    dialogue_instruction = "Dialogue script (@Beta and @Ammi face each other with fast comedic timing, never look at camera):\n"
+
+            # 4. Ammi Alone
+            elif has_ammi and not has_beta and not has_abbu:
+                chars_present = "@Ammi"
+                wardrobe_desc = f"@Ammi wears {wardrobe['ammi']}"
+                if is_staircase_scene:
+                    pos_desc = (
+                        "Over-the-shoulder rear shot / back view from behind @Ammi: The camera is placed directly behind @Ammi, "
+                        "showing the back of her head and shoulders. @Ammi stands at the bottom step with her entire body and front facing directly into the wooden staircase, "
+                        "looking straight UP at the ascending stairs toward the second-floor landing. "
+                        "Her back is to the camera throughout the entire clip. Her face and gaze are directed straight up the stairs. "
+                        "Neither @Abbu nor @Beta are visible in this frame"
+                    )
+                    dialogue_instruction = "Dialogue script (@Ammi shouts straight UP the stairs from behind camera perspective):\n"
+                else:
+                    pos_desc = "@Ammi is in CENTER frame looking expressive. Neither @Abbu nor @Beta are visible in this frame"
+                    dialogue_instruction = "Dialogue script (@Ammi speaks with expressive comedic timing, never looks at camera):\n"
+
+            # 5. Beta Alone
             elif has_beta and not has_ammi and not has_abbu:
-                # Beta alone (e.g. upstairs in room)
                 chars_present = "@Beta"
                 wardrobe_desc = f"@Beta wears {wardrobe['beta']}"
-                pos_desc = "@Beta is in CENTER frame looking exasperated"
+                pos_desc = "@Beta is in CENTER frame looking exasperated. Neither @Ammi nor @Abbu are visible in this frame"
                 dialogue_instruction = "Dialogue script (Beta speaks to himself exasperated):\n"
+
+            # 6. Abbu Alone
+            elif has_abbu and not has_ammi and not has_beta:
+                chars_present = "@Abbu"
+                wardrobe_desc = f"@Abbu wears {wardrobe['abbu']}"
+                pos_desc = "@Abbu is in CENTER frame looking thoughtful or amused. Neither @Ammi nor @Beta are visible in this frame"
+                dialogue_instruction = "Dialogue script (Abbu speaks with witty comedic delivery):\n"
+
+            # 7. Default: All Three Together
             else:
-                # Default all three together
                 chars_present = "@Abbu, @Ammi, and @Beta"
                 wardrobe_desc = f"@Beta wears {wardrobe['beta']}, @Ammi wears {wardrobe['ammi']}, @Abbu wears {wardrobe['abbu']}"
                 pos_desc = "@Beta on screen-LEFT, @Ammi in CENTER, @Abbu on screen-RIGHT. DO NOT swap their positions. @Beta must NOT smile at the punchline"
@@ -301,21 +351,17 @@ def format_family_multi_scene_prompts(data, wardrobe=None):
             )
         else:
             # Scene 2, 3... Intelligent Continuation
-            if has_beta and not has_ammi:
+            if is_staircase_scene and has_beta:
                 action_desc = (
-                    "Gradual walking descent: The 25-year-old adult son (Beta) begins up at the top landing and slowly walks down the wooden steps step-by-step into frame. "
+                    "Gradual walking descent: The adult son (Beta) begins up at the top landing and slowly walks down the wooden steps step-by-step into frame. "
                     "As he reaches the lower steps, he pauses resting his hand on the wooden banister, looking down at Ammi with an amused, exasperated comedic expression before speaking. "
                     "@Ammi remains stationed at the bottom step with her back to camera looking up at him. "
                 )
-            elif has_beta and has_ammi:
-                action_desc = (
-                    "Gradual walking descent: The adult son (Beta) walks down the stairs step-by-step from the upper landing, pausing on the steps above Ammi. "
-                )
             else:
-                action_desc = ""
+                action_desc = "Characters maintain their spatial positions facing each other, continuing their comedic conversation seamlessly. "
 
             prompt_text = (
-                f"Continue seamlessly from this exact starting frame, keeping the exact same staircase, lighting, and wardrobe. "
+                f"Continue seamlessly from this exact starting frame, keeping the exact same location, lighting, and wardrobe. "
                 f"{action_desc}"
                 f"Fixed medium-wide camera, no cuts, no zooms. "
                 f"{dialogue_script}"
