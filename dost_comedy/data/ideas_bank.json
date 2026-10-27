@@ -1,0 +1,74 @@
+[
+  {
+    "id": "joke_1_bike",
+    "title": "موٹر سائیکل کا روزہ (Motorcycle Roza)",
+    "location": "Streetside / Roadside curb next to an old CD70 motorbike",
+    "prop": "Old motorbike, empty fuel tank",
+    "scene_1": {
+      "speaker_at_00": "Mani",
+      "dialogue_at_00": "اوئے شانی، کیا ہوا؟ پٹرول ختم ہو گیا ہے کیا؟",
+      "speaker_at_03": "Shani",
+      "dialogue_at_03": "نہیں بھائی مانی، میری موٹر سائیکل کا آج نفلی روزہ ہے!"
+    }
+  },
+  {
+    "id": "joke_2_loadshedding",
+    "title": "لوڈشیڈنگ اور موم بتی (Loadshedding Candle)",
+    "location": "Bachelors room sofa with darkness outside window",
+    "prop": "Wax candle, glowing smartphone",
+    "scene_1": {
+      "speaker_at_00": "Mani",
+      "dialogue_at_00": "شانی لائٹ چلی گئی ہے، وہ دیکھ موم بتی پڑی ہے!",
+      "speaker_at_03": "Shani",
+      "dialogue_at_03": "بھائی مانی، کیا موم بتی کی آگ سے میرا موبائل چارج ہو جائے گا؟"
+    }
+  },
+  {
+    "id": "joke_3_jugaad_fan",
+    "title": "پاکستانی جگاڑ پنکھا (Ceiling Fan Jugaad)",
+    "location": "Living room under a stopped ceiling fan",
+    "prop": "Long wooden broom stick touching ceiling fan blade",
+    "scene_1": {
+      "speaker_at_00": "Mani",
+      "dialogue_at_00": "اوئے شانی، پنکھے کو ڈنڈے سے گھما کر کیا ثابت کرنا چاہتے ہو؟",
+      "speaker_at_03": "Shani",
+      "dialogue_at_03": "بھائی اس کو پہلی کِک مار رہا ہوں، ایک بار سٹارٹ ہو جائے تو چلے گا!"
+    }
+  },
+  {
+    "id": "joke_4_chai_summer",
+    "title": "45 ڈگری اور کڑک چائے (Hot Tea in Summer)",
+    "location": "Roadside Chai Dhaba with wooden benches",
+    "prop": "Steaming hot glass cups of doodh patti chai",
+    "scene_1": {
+      "speaker_at_00": "Mani",
+      "dialogue_at_00": "باہر پنتالیس ڈگری گرمی ہے اور تم ابلتی ہوئی کڑک چائے پی رہے ہو؟",
+      "speaker_at_03": "Shani",
+      "dialogue_at_03": "بھائی گرمی کو گرمی ہی کاٹتی ہے، تجھے سائنس کا کیا پتہ!"
+    }
+  },
+  {
+    "id": "joke_5_rickshaw_hurry",
+    "title": "رکشے والے کی جلدی (Rickshaw Driver Hurry)",
+    "location": "Street corner near auto rickshaw stand",
+    "prop": "Green auto rickshaw",
+    "scene_1": {
+      "speaker_at_00": "Mani",
+      "dialogue_at_00": "شانی رکشے والے کو جلدی چلنے کا بولا تھا، وہ تو دو سو کی سپیڈ پر اڑا رہا ہے!",
+      "speaker_at_03": "Shani",
+      "dialogue_at_03": "بھائی اس کو بولا تھا جلدی پہنچاؤ، اس نے سیدھا اوپر پہنچانے کی ٹھان لی ہے!"
+    }
+  },
+  {
+    "id": "joke_6_guest_sharbat",
+    "title": "مہمان اور ٹھنڈا شربت (Pakistani Guest Sharbat)",
+    "location": "Drawing room sofa with tea table",
+    "prop": "Red rooh afza glass and empty biscuit tray",
+    "scene_1": {
+      "speaker_at_00": "Mani",
+      "dialogue_at_00": "مہمان کہہ رہے تھے ہم کچھ نہیں لیں گے، اور پورا جگ شربت پی گئے!",
+      "speaker_at_03": "Shani",
+      "dialogue_at_03": "بھائی تکلف صرف پہلے گلاس تک ہوتا ہے، اس کے بعد وہ اپنے گھر والے بن جاتے ہیں!"
+    }
+  }
+]

@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dost Comedy Studio | Shani & Mani Universe</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Noto+Nastaliq+Urdu:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #0a0e17;
+      --card-bg: rgba(20, 27, 45, 0.7);
+      --border-color: rgba(255, 255, 255, 0.08);
+      --accent-blue: #00d2ff;
+      --accent-purple: #9d4edd;
+      --accent-gold: #ffb703;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      font-family: 'Outfit', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+      background-image: radial-gradient(circle at 15% 20%, rgba(0, 210, 255, 0.08) 0%, transparent 40%),
+                        radial-gradient(circle at 85% 70%, rgba(157, 78, 221, 0.08) 0%, transparent 40%);
+    }
+    header {
+      padding: 1.5rem 2.5rem;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      backdrop-filter: blur(12px);
+      background: rgba(10, 14, 23, 0.8);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .brand-title {
+      font-size: 1.5rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .badge-pill {
+      background: rgba(0, 210, 255, 0.1);
+      border: 1px solid rgba(0, 210, 255, 0.3);
+      padding: 0.4rem 1rem;
+      border-radius: 9999px;
+      font-size: 0.85rem;
+      color: var(--accent-blue);
+      font-weight: 600;
+    }
+    .container {
+      max-width: 1350px;
+      margin: 2rem auto;
+      padding: 0 1.5rem;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+      flex: 1;
+    }
+    .full-width { grid-column: 1 / -1; }
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 1.5rem;
+      backdrop-filter: blur(16px);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    }
+    .card-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: var(--text-main);
+    }
+    .char-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    .char-card {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 1.25rem;
+      border-left: 4px solid var(--accent-blue);
+    }
+    .char-card.mani {
+      border-left-color: var(--accent-purple);
+    }
+    .char-name {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--accent-blue);
+      margin-bottom: 0.25rem;
+    }
+    .char-card.mani .char-name {
+      color: var(--accent-purple);
+    }
+    .char-role {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--accent-gold);
+      margin-bottom: 0.6rem;
+      font-weight: 600;
+    }
+    .char-desc {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+    .jokes-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      max-height: 480px;
+      overflow-y: auto;
+      padding-right: 0.5rem;
+    }
+    .joke-item {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--border-color);
+      padding: 1rem 1.25rem;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .joke-item:hover, .joke-item.active {
+      background: rgba(0, 210, 255, 0.08);
+      border-color: var(--accent-blue);
+      transform: translateY(-2px);
+    }
+    .joke-title-urdu {
+      font-family: 'Noto Nastaliq Urdu', serif;
+      font-size: 1.05rem;
+      direction: rtl;
+      color: #fff;
+    }
+    .joke-sub {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-top: 0.25rem;
+    }
+    .prompt-box {
+      width: 100%;
+      height: 220px;
+      background: #060910;
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      color: #38bdf8;
+      font-family: monospace;
+      font-size: 0.88rem;
+      line-height: 1.5;
+      padding: 1rem;
+      resize: vertical;
+      margin-bottom: 1rem;
+      outline: none;
+    }
+    .prompt-box:focus {
+      border-color: var(--accent-blue);
+      box-shadow: 0 0 15px rgba(0, 210, 255, 0.2);
+    }
+    .btn {
+      background: linear-gradient(135deg, var(--accent-blue), #0284c7);
+      color: #fff;
+      border: none;
+      padding: 0.75rem 1.5rem;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      font-size: 0.95rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: all 0.2s;
+    }
+    .btn:hover {
+      filter: brightness(1.15);
+      transform: scale(1.02);
+    }
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--text-main);
+    }
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.15);
+    }
+    .notification {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      background: #10b981;
+      color: white;
+      padding: 0.85rem 1.75rem;
+      border-radius: 8px;
+      font-weight: 600;
+      box-shadow: 0 10px 25px rgba(16, 185, 129, 0.4);
+      display: none;
+      z-index: 1000;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="brand-title">
+      <span>👬</span> Dost Comedy Studio (Shani & Mani)
+    </div>
+    <div style="display: flex; gap: 1rem; align-items: center;">
+      <span class="badge-pill">PORT 8060</span>
+      <span class="badge-pill" style="border-color: var(--accent-purple); color: var(--accent-purple);">DUO UNIVERSE</span>
+    </div>
+  </header>
+
+  <div class="container">
+
+    <!-- TOP SECTION: Characters Reference Summary -->
+    <div class="card full-width">
+      <div class="card-title">🎭 Permanent Characters Reference for Google Flow</div>
+      <div class="char-grid">
+        <div class="char-card">
+          <div class="char-name">@Shani</div>
+          <div class="char-role">The Witty Jugaadu Hero (23y)</div>
+          <div class="char-desc">Navy blue henley shirt, textured messy hair, sharp jawline with light shadow stubble. Highly expressive, witty, energetic street-smart guy who always has a hilarious excuse or jugaad.</div>
+        </div>
+        <div class="char-card mani">
+          <div class="char-name">@Mani</div>
+          <div class="char-role">The Sarcastic Best Friend (25y)</div>
+          <div class="char-desc">Open denim jacket over mustard yellow tee, neatly styled pompadour, clean short trimmed beard and mustache. Sarcastic, bewildered, deadpan reality checker.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- LEFT COLUMN: Preloaded Viral Jokes -->
+    <div class="card">
+      <div class="card-title">📂 Pre-loaded Friend Jokes (Instant 1-Click)</div>
+      <div class="jokes-list" id="jokes-container">
+        <!-- Loaded via JS -->
+      </div>
+    </div>
+
+    <!-- RIGHT COLUMN: Generated Google Flow Prompt -->
+    <div class="card">
+      <div class="card-title">⚡ Google Flow 10s Prompt (Production Ready)</div>
+      <div id="current-joke-title" style="font-weight: 600; color: var(--accent-gold); margin-bottom: 0.75rem;">Select a joke to generate prompt</div>
+      <textarea id="prompt-output" class="prompt-box" placeholder="Your Google Flow prompt with 3/4 camera angle, zero calligraphy constraint, and 10s container budget will appear here..."></textarea>
+      <div style="display: flex; gap: 0.75rem;">
+        <button class="btn" onclick="copyPrompt()">📋 Copy Prompt for Google Flow</button>
+      </div>
+    </div>
+
+  </div>
+
+  <div id="toast" class="notification">✅ Prompt Copied to Clipboard! Paste in Google Flow!</div>
+
+  <script>
+    let currentJokes = [];
+
+    async function loadJokes() {
+      try {
+        const res = await fetch('/api/jokes');
+        currentJokes = await res.json();
+        const container = document.getElementById('jokes-container');
+        container.innerHTML = '';
+
+        currentJokes.forEach((joke, idx) => {
+          const div = document.createElement('div');
+          div.className = 'joke-item';
+          div.id = 'joke-' + joke.id;
+          div.innerHTML = `
+            <div>
+              <div class="joke-title-urdu">${joke.title}</div>
+              <div class="joke-sub">📍 ${joke.location} • 🎒 ${joke.prop}</div>
+            </div>
+            <span style="font-size: 1.2rem;">➡️</span>
+          `;
+          div.onclick = () => selectJoke(joke.id);
+          container.appendChild(div);
+        });
+
+        if (currentJokes.length > 0) {
+          selectJoke(currentJokes[0].id);
+        }
+      } catch (err) {
+        console.error('Failed to load jokes', err);
+      }
+    }
+
+    async function selectJoke(jokeId) {
+      document.querySelectorAll('.joke-item').forEach(el => el.classList.remove('active'));
+      const activeEl = document.getElementById('joke-' + jokeId);
+      if (activeEl) activeEl.classList.add('active');
+
+      try {
+        const res = await fetch('/api/joke-prompt/' + jokeId);
+        const data = await res.json();
+        document.getElementById('current-joke-title').innerText = data.joke.title + " (" + data.joke.location + ")";
+        document.getElementById('prompt-output').value = data.prompt;
+      } catch (err) {
+        console.error('Error fetching prompt', err);
+      }
+    }
+
+    function copyPrompt() {
+      const textarea = document.getElementById('prompt-output');
+      textarea.select();
+      navigator.clipboard.writeText(textarea.value);
+      showToast();
+    }
+
+    function showToast() {
+      const toast = document.getElementById('toast');
+      toast.style.display = 'block';
+      setTimeout(() => {
+        toast.style.display = 'none';
+      }, 3000);
+    }
+
+    loadJokes();
+  </script>
+</body>
+</html>

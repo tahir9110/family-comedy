@@ -11,6 +11,10 @@ This repository contains the full automated production pipeline for Pakistani co
 - **Larka Larki Studio**: `http://localhost:8001/` (Characters: `@Larka`, `@Larki`)
   - Server file: `d:\Family Comedy\larka_larki\studio\server.py`
   - Generator logic: `d:\Family Comedy\larka_larki\studio\generator.py`
+- **Dost Comedy Studio (Shani & Mani)**: `http://localhost:8060/` (Characters: `@Shani`, `@Mani`)
+  - Server file: [dost_comedy/studio/server.py](file:///d:/Family%20Comedy/dost_comedy/studio/server.py)
+  - Generator logic: [dost_comedy/studio/generator.py](file:///d:/Family%20Comedy/dost_comedy/studio/generator.py)
+  - Batch launcher: [start_dost_studio.bat](file:///d:/Family%20Comedy/start_dost_studio.bat)
 
 ---
 
