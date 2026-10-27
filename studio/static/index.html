@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pakistani Sitcom Studio | Automated Production Pipeline</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Noto+Nastaliq+Urdu:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <!-- Ambient Glow FX -->
+  <div class="ambient-glow glow-1"></div>
+  <div class="ambient-glow glow-2"></div>
+
+  <!-- Header -->
+  <header class="studio-header">
+    <div class="header-content">
+      <div class="logo-group">
+        <span class="logo-icon">🎭</span>
+        <div>
+          <h1>Pakistani Sitcom Studio</h1>
+          <p class="subtitle">AI Comedy Production Pipeline • 1-Click Fast Workflow</p>
+        </div>
+      </div>
+      <div class="header-badges">
+        <div class="badge-card">
+          <span class="badge-label">Active Episode</span>
+          <span class="badge-value text-gradient" id="badge-current-ep">EPISODE 9</span>
+        </div>
+        <div class="badge-card">
+          <span class="badge-label">Ledger Count</span>
+          <span class="badge-value text-emerald" id="badge-total-eps">8 Done</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="studio-main">
+    <div class="layout-grid">
+      <!-- Left Column: 3-Step Wizard Workflow -->
+      <section class="workflow-column">
+        
+        <!-- STEP 1: Fast Joke Selector & Smart Paste -->
+        <div class="glass-panel step-panel" id="panel-step-1">
+          <div class="panel-header">
+            <div class="step-tag">STEP 1</div>
+            <h2>Choose Joke or Paste Any Script (Zero Hassle)</h2>
+          </div>
+
+          <!-- Section 1A: Wardrobe Selector -->
+          <div class="wardrobe-section mb-3">
+            <div class="wardrobe-header">
+              <span class="section-title">👔 Outfit / Wardrobe for this Episode:</span>
+              <span class="wardrobe-hint">Auto-rotates fresh clothes each episode, or pick below:</span>
+            </div>
+            <div class="wardrobe-pills" id="wardrobe-pills-container">
+              <!-- Populated dynamically -->
+            </div>
+          </div>
+
+          <!-- Section 1B: 1-Click Viral Jokes from Friends -->
+          <div class="quick-jokes-section">
+            <div class="section-title">⚡ 1-Click Viral Jokes (Instant Setup):</div>
+            <div class="viral-jokes-grid" id="viral-jokes-container">
+              <!-- Populated dynamically: Bike Roza, Loadshedding Candle, Jugaad Fan, Chai, Riksha, Mehmaan -->
+            </div>
+          </div>
+
+          <!-- Divider -->
+          <div class="or-divider">
+            <span>OR PASTE ANY RAW JOKE / SCRIPT</span>
+          </div>
+
+          <!-- Section 1B: Smart Raw Textbox (Single Box, No Annoying Fields!) -->
+          <div class="smart-paste-section">
+            <textarea id="smart-raw-input" class="studio-textarea urdu-text" rows="3" placeholder="یہاں کوئی بھی لطیفہ، واٹس ایپ میسج یا اپنا آئیڈیا پیسٹ کریں... (Paste ANY raw joke, WhatsApp forward, or rough idea here)"></textarea>
+            <button class="btn btn-primary btn-block mt-2" onclick="handleSmartParse()">
+              ✨ Magic Auto-Convert to Episode Prompts
+            </button>
+          </div>
+
+          <!-- Active Episode Info Banner -->
+          <div class="meta-tags-preview mt-3" id="active-meta-tags">
+            <span class="meta-tag font-bold text-gradient" id="meta-title">🎬 Title: Loading...</span>
+            <span class="meta-tag" id="meta-location">📍 Location: ...</span>
+            <span class="meta-tag" id="meta-prop">📦 Prop: ...</span>
+            <span class="meta-tag badge-success font-bold" id="meta-scenes-count">🎞️ Scenes: ...</span>
+          </div>
+
+          <!-- Dynamic Prompts Grid: Renders as many scenes as needed (Scene 1, Scene 2, Scene 3, Scene 4...) -->
+          <div class="prompts-grid-dynamic" id="dynamic-prompts-container">
+            <!-- Rendered dynamically by app.js -->
+          </div>
+        </div>
+
+        <!-- STEP 2: Clip 1 Ingest & Last Frame Extractor -->
+        <div class="glass-panel step-panel" id="panel-step-2">
+          <div class="panel-header">
+            <div class="step-tag">STEP 2</div>
+            <h2>Ingest Clip 1 & Extract Frame for Continuation</h2>
+          </div>
+
+          <div class="ingest-controls">
+            <!-- Dropzone -->
+            <div class="dropzone" id="dropzone-clip1">
+              <input type="file" id="file-clip1" accept="video/mp4" class="hidden-input" onchange="handleFileSelect('clip1')">
+              <div class="dropzone-content">
+                <span class="drop-icon">📥</span>
+                <p><strong>Drag & Drop Clip 1 MP4</strong> or click to browse</p>
+                <span class="file-chosen" id="filename-clip1">No file chosen</span>
+              </div>
+            </div>
+
+            <!-- Quick Auto-Detect Button -->
+            <div class="auto-detect-box">
+              <button class="btn btn-secondary btn-block" onclick="autoDetectClip(1)">
+                🔍 Auto-Detect Latest Download
+              </button>
+              <div class="detected-file-info" id="detect-info-clip1"></div>
+            </div>
+          </div>
+
+          <!-- Extracted Frame Display -->
+          <div class="extracted-frame-container hidden" id="extracted-frame-box">
+            <div class="frame-preview-card">
+              <img id="img-last-frame" src="" alt="Extracted Last Frame">
+              <div class="frame-details">
+                <span class="badge-success">✅ Frame Extracted Automatically</span>
+                <p class="frame-path-text" id="text-frame-path"></p>
+                <button class="btn btn-sm btn-primary" onclick="copyFramePath()">📋 Copy Image Path</button>
+              </div>
+            </div>
+
+            <!-- Scene 2 Prompt Box -->
+            <div class="prompt-output-box mt-3">
+              <div class="prompt-header">
+                <span class="prompt-title">🎬 Scene 2 Prompt (I2V - ZERO @ Tags)</span>
+                <button class="btn btn-sm btn-accent" id="btn-copy-s2" onclick="copyPrompt('scene2')">📋 Copy Scene 2 Prompt</button>
+              </div>
+              <textarea id="prompt-s2-text" class="studio-textarea" readonly rows="5"></textarea>
+              <div class="prompt-hint">💡 In Flow: Upload the extracted frame above, paste this prompt, and hit Enter.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- STEP 3: Clip 2 Ingest & Final Master Stitch -->
+        <div class="glass-panel step-panel" id="panel-step-3">
+          <div class="panel-header">
+            <div class="step-tag">STEP 3</div>
+            <h2>Ingest Clip 2 & Stitch Master Video</h2>
+          </div>
+
+          <div class="ingest-controls">
+            <!-- Dropzone -->
+            <div class="dropzone" id="dropzone-clip2">
+              <input type="file" id="file-clip2" accept="video/mp4" class="hidden-input" onchange="handleFileSelect('clip2')">
+              <div class="dropzone-content">
+                <span class="drop-icon">📥</span>
+                <p><strong>Drag & Drop Clip 2 MP4</strong> or click to browse</p>
+                <span class="file-chosen" id="filename-clip2">No file chosen</span>
+              </div>
+            </div>
+
+            <!-- Quick Auto-Detect Button -->
+            <div class="auto-detect-box">
+              <button class="btn btn-secondary btn-block" onclick="autoDetectClip(2)">
+                🔍 Auto-Detect Latest Download
+              </button>
+              <div class="detected-file-info" id="detect-info-clip2"></div>
+            </div>
+          </div>
+
+          <div class="stitch-action-bar">
+            <button class="btn btn-glow btn-block" id="btn-stitch" onclick="runMasterStitch()">
+              🎬 STITCH MASTER EPISODE & UPDATE LEDGER
+            </button>
+          </div>
+
+          <!-- Stitched Video Player Modal / Box -->
+          <div class="final-video-box hidden" id="final-video-container">
+            <div class="video-preview-header">
+              <span class="badge-success">🎉 Final Stitched Master Ready!</span>
+              <a id="link-download-final" href="#" download class="btn btn-sm btn-secondary">💾 Download Video</a>
+            </div>
+            <video id="player-final-video" controls class="studio-video-player"></video>
+          </div>
+        </div>
+      </section>
+
+      <!-- Right Column: Ledger & Anti-Template Checker -->
+      <aside class="sidebar-column">
+        <!-- History Ledger Panel -->
+        <div class="glass-panel sidebar-panel">
+          <div class="panel-header">
+            <h3>📜 Episode History Ledger</h3>
+            <span class="count-tag" id="count-history">8</span>
+          </div>
+          <p class="sidebar-hint">YouTube anti-template rotation check (zero repetitive content).</p>
+          <div class="history-list" id="history-list">
+            <!-- Populated dynamically -->
+          </div>
+        </div>
+      </aside>
+    </div>
+  </main>
+
+  <!-- Hidden fallback compatibility element -->
+  <textarea id="prompt-s1-text" style="display:none;"></textarea>
+
+  <!-- Toast Notification Container -->
+  <div id="toast-container" class="toast-container"></div>
+
+  <script src="/static/app.js?v=20261027_02"></script>
+</body>
+</html>

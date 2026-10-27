@@ -1,0 +1,22 @@
+# API Keys & Secrets - NEVER COMMIT
+*key*.txt
+openai key.txt
+aistuio free key.txt
+.env
+
+# Temporary & Cache files
+temp/
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+
+# Large Video Output files (keep branding and images)
+output/*.mp4
+output/*.wav
+output/*.mp3
+scratch/
+
+# OS specific
+Thumbs.db
+.DS_Store
