@@ -227,10 +227,12 @@ def format_multi_scene_prompts(data, wardrobe=None):
                 f"@Larka wears {wardrobe['larka']}, @Larki wears {wardrobe['larki']}. "
                 f"Pakistani {location.lower()} setting{prop_desc}. "
                 f"Interior decor constraint: Plain clean walls with modern simple abstract art or landscape painting only. Absolutely NO Arabic script, NO calligraphy wall frames, NO religious verses, and NO text on walls or banners. "
-                f"@Larka on screen-LEFT, @Larki on screen-RIGHT. DO NOT swap their positions. "
-                f"Fixed medium-wide camera shot, no cuts, no close-ups, both visible throughout. "
+                f"Side-profile two-shot in 3/4 angle: The camera captures both characters from an angled profile perspective so BOTH characters' full faces, eyes, and mouth expressions are clearly visible to the camera simultaneously. "
+                f"@Larka stands on screen-LEFT angled in a three-quarter stance toward the camera, and @Larki stands on screen-RIGHT angled in a three-quarter stance toward the camera. "
+                f"NEITHER character has their back turned to the camera. Both faces are in clear view throughout the entire scene as they speak to each other. DO NOT swap their positions. "
+                f"Fixed medium-wide camera shot, stationary camera, no cuts, no close-ups, no reverse angles. "
                 f"{dialogue_script}"
-                f"Characters look at each other, never at camera. No unscripted dialogue."
+                f"Characters look at each other with expressive comedic timing, never directly into the camera lens. No unscripted dialogue."
             )
         else:
             # Scene 2, 3, 4, 5... (Image-to-Video Continuation with ZERO @ tags!)

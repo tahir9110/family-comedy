@@ -37,12 +37,16 @@ This skill documents the end-to-end architecture, rules, and best practices esta
 
 ## 3. Camera Staging & Visual Positioning
 
-1. **Fixed Perspective & No Cuts**:
+1. **Side-Profile Two-Shot in 3/4 Angle (Both Faces Visible)**:
+   - Always enforce: `Side-profile two-shot in 3/4 angle: The camera captures both characters from an angled profile perspective so BOTH characters' full faces, eyes, and mouth expressions are clearly visible to the camera simultaneously. NEITHER character has their back turned to the camera. Both faces are in clear view throughout the entire clip as they converse.`
+   - This ensures both characters emote clearly and allows seamless post-production punch-in zooms in CapCut/Premiere without showing a character's back.
+2. **Fixed Perspective & No Cuts**:
    - Always enforce: `Fixed medium-wide camera shot, stationary camera, no cuts, no close-ups, no reverse angles.`
-2. **Spatial Anchors**:
+3. **Spatial Anchors**:
    - **Family Comedy**: `@Beta` screen-LEFT, `@Ammi` CENTER, `@Abbu` screen-RIGHT.
    - **Larka Larki**: `@Larka` screen-LEFT, `@Larki` screen-RIGHT.
-3. **Over-The-Shoulder / Rear Views**:
+   - **Workplace**: `@Beta` screen-LEFT (employee), `@Boss` screen-RIGHT (authority).
+4. **Over-The-Shoulder / Rear Views**:
    - When a character speaks looking away from the camera (e.g. Ammi calling upstairs from the staircase):
    - Always include: `Over-the-shoulder rear shot / back view from behind @Ammi. STRICT BODY LOCK: @Ammi stays facing up the stairs with back to the camera throughout the entire clip without turning around.`
 4. **Multi-Scene Motion Continuation**:

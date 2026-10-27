@@ -268,22 +268,24 @@ def format_family_multi_scene_prompts(data, wardrobe=None):
                 chars_present = "@Abbu and @Ammi"
                 wardrobe_desc = f"@Ammi wears {wardrobe['ammi']}, @Abbu wears {wardrobe['abbu']}"
                 pos_desc = (
-                    "Across the screen: @Ammi is on screen-LEFT facing @Abbu, while @Abbu is on screen-RIGHT facing @Ammi. "
-                    "Both characters stand or sit facing each other engaged in conversation. DO NOT swap their positions. @Beta is NOT in this frame. "
+                    "Side-profile two-shot in 3/4 angle: The camera captures both characters from an angled profile perspective so BOTH characters' full faces, eyes, and mouth expressions are clearly visible to the camera simultaneously. "
+                    "@Ammi is on screen-LEFT angled in a three-quarter stance toward the camera, while @Abbu is on screen-RIGHT angled in a three-quarter stance toward the camera. "
+                    "NEITHER character has their back turned to the camera. Both faces are in clear view throughout the entire clip as they converse. DO NOT swap their positions. @Beta is NOT in this frame. "
                     "FACIAL EMOTION LOCK: Characters maintain expressive comedic facial reactions consistent with the punchline (shocked, exasperated or smirking), never laughing at their own insult"
                 )
-                dialogue_instruction = "Dialogue script (@Abbu and @Ammi face each other with fast comedic timing, never look at camera):\n"
+                dialogue_instruction = "Dialogue script (@Abbu and @Ammi face each other with fast comedic timing, never look directly into camera lens):\n"
 
             # 2. Abbu & Beta Duo (Father & Son banter)
             elif has_abbu and has_beta and not has_ammi:
                 chars_present = "@Abbu and @Beta"
                 wardrobe_desc = f"@Beta wears {wardrobe['beta']}, @Abbu wears {wardrobe['abbu']}"
                 pos_desc = (
-                    "Across the screen: @Beta stands or sits on screen-LEFT facing @Abbu, while @Abbu is on screen-RIGHT facing @Beta. "
-                    "DO NOT swap their positions. @Ammi is NOT in this frame. "
+                    "Side-profile two-shot in 3/4 angle: The camera captures both characters from an angled profile perspective so BOTH characters' full faces, eyes, and mouth expressions are clearly visible to the camera simultaneously. "
+                    "@Beta stands or sits on screen-LEFT angled in a three-quarter stance toward the camera, while @Abbu is on screen-RIGHT angled in a three-quarter stance toward the camera. "
+                    "NEITHER character has their back turned to the camera. Both faces are in clear view throughout the entire clip as they converse. DO NOT swap their positions. @Ammi is NOT in this frame. "
                     "FACIAL EMOTION LOCK: @Beta must NOT smile or laugh at the punchline; @Beta keeps a crestfallen, offended, or shocked reaction throughout. Only @Abbu chuckles or smiles"
                 )
-                dialogue_instruction = "Dialogue script (@Beta and @Abbu face each other with fast comedic timing, never look at camera):\n"
+                dialogue_instruction = "Dialogue script (@Beta and @Abbu face each other with fast comedic timing, never look directly into camera lens):\n"
 
             # 3. Ammi & Beta Duo (Mother & Son)
             elif has_ammi and has_beta and not has_abbu:
@@ -300,10 +302,11 @@ def format_family_multi_scene_prompts(data, wardrobe=None):
                     dialogue_instruction = "Dialogue script (@Ammi shouts straight UP the stairs from behind camera perspective):\n"
                 else:
                     pos_desc = (
-                        "Across the screen: @Beta stands on screen-LEFT facing @Ammi, while @Ammi stands on screen-RIGHT facing @Beta. "
-                        "DO NOT swap their positions. @Abbu is NOT in this frame"
+                        "Side-profile two-shot in 3/4 angle: The camera captures both characters from an angled profile perspective so BOTH characters' full faces, eyes, and mouth expressions are clearly visible to the camera simultaneously. "
+                        "@Beta stands on screen-LEFT angled in a three-quarter stance toward the camera, while @Ammi stands on screen-RIGHT angled in a three-quarter stance toward the camera. "
+                        "NEITHER character has their back turned to the camera. Both faces are in clear view throughout the entire clip as they converse. DO NOT swap their positions. @Abbu is NOT in this frame"
                     )
-                    dialogue_instruction = "Dialogue script (@Beta and @Ammi face each other with fast comedic timing, never look at camera):\n"
+                    dialogue_instruction = "Dialogue script (@Beta and @Ammi face each other with fast comedic timing, never look directly into camera lens):\n"
 
             # 4. Ammi Alone
             elif has_ammi and not has_beta and not has_abbu:
@@ -344,25 +347,31 @@ def format_family_multi_scene_prompts(data, wardrobe=None):
                 if "boss" in ext_tag.lower():
                     wardrobe_desc = f"@Beta wears a slightly crumpled light-blue office shirt with dark trousers. Alongside him is {ext_tag}, a stern 50-year-old Pakistani corporate manager wearing a formal charcoal suit and tie"
                     pos_desc = (
-                        f"Across the screen: {ext_tag} sits behind the executive desk on screen-RIGHT, while @Beta stands nervously in front on screen-LEFT facing {ext_tag}. "
-                        f"DO NOT swap their positions. Neither @Ammi nor @Abbu are in this frame. "
-                        f"FACIAL EMOTION LOCK: Characters maintain expressive comedic facial reactions (angry boss, frightened/fidgeting employee), never smiling at the insult"
+                        f"Side-profile two-shot in 3/4 angle: The camera is positioned so that BOTH characters' full faces and facial expressions are clearly visible to the camera at the same time. "
+                        f"@Beta stands on screen-LEFT angled in a three-quarter stance toward the camera, and {ext_tag} sits on screen-RIGHT behind the desk angled toward the camera. "
+                        f"NEITHER character has their back turned to the camera. Both faces are clearly seen emoting throughout. "
+                        f"FACIAL EMOTION LOCK: {ext_tag} is furious and demanding, while @Beta keeps an anxious, fidgety comedic expression, never smiling at the scolding. "
+                        f"DO NOT swap their positions. Neither @Ammi nor @Abbu are in this frame"
                     )
                 else:
                     ext_name = ext_tag.replace("@", "")
                     wardrobe_desc = f"@Beta wears {wardrobe['beta']}. Alongside him is {ext_tag}, an authoritative Pakistani {ext_name}"
                     pos_desc = (
-                        f"Across the screen: {ext_tag} is on screen-RIGHT as the authority figure, while @Beta is on screen-LEFT facing {ext_tag}. "
-                        f"DO NOT swap their positions. Neither @Ammi nor @Abbu are in this frame"
+                        f"Side-profile two-shot in 3/4 angle: The camera is positioned so that BOTH characters' full faces and facial expressions are clearly visible to the camera at the same time. "
+                        f"@Beta stands on screen-LEFT angled in a three-quarter stance toward the camera, and {ext_tag} is on screen-RIGHT as the authority figure angled toward the camera. "
+                        f"NEITHER character has their back turned to the camera. Both faces are clearly seen emoting throughout. DO NOT swap their positions. Neither @Ammi nor @Abbu are in this frame"
                     )
-                dialogue_instruction = f"Dialogue script ({ext_tag} and @Beta face each other with fast comedic timing, never look at camera):\n"
+                dialogue_instruction = f"Dialogue script ({ext_tag} and @Beta face each other with fast comedic timing, never look directly into camera lens):\n"
 
             # 8. Default: All Three Together (Family Sitcom)
             else:
                 chars_present = "@Abbu, @Ammi, and @Beta"
                 wardrobe_desc = f"@Beta wears {wardrobe['beta']}, @Ammi wears {wardrobe['ammi']}, @Abbu wears {wardrobe['abbu']}"
-                pos_desc = "@Beta on screen-LEFT, @Ammi in CENTER, @Abbu on screen-RIGHT. DO NOT swap their positions. @Beta must NOT smile at the punchline"
-                dialogue_instruction = "Dialogue script (characters face each other, never look at camera):\n"
+                pos_desc = (
+                    "Open three-quarter staging: @Beta is on screen-LEFT angled 3/4 toward the camera, @Ammi is in CENTER, and @Abbu is on screen-RIGHT angled 3/4 toward the camera. "
+                    "All three faces and facial expressions are clearly visible to the camera. NEITHER character turns their back to the lens. DO NOT swap their positions. @Beta must NOT smile at the punchline"
+                )
+                dialogue_instruction = "Dialogue script (characters face each other, never look directly into camera lens):\n"
 
             # Rebuild dialogue script with specific instruction
             dialogue_script = dialogue_instruction

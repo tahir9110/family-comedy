@@ -19,7 +19,7 @@ This repository contains the full automated production pipeline for Pakistani co
 - **Duration Budget**: Short 3-4 line jokes MUST be kept to **1 clip (10 seconds)**.
 - **Short-Line Safety Expansion**: Expand 1-2 word lines (e.g. "Par kyun?") to 4-5 words (e.g. "ارے پر کیوں ابو؟ مجھے وجہ تو بتائیں!") to prevent Google Flow TTS speaker-swapping bugs.
 - **Negative Constraint (Safety)**: Plain walls only. **Absolutely NO Arabic script, NO calligraphy wall frames, NO religious verses on walls.**
-- **Camera Staging**: Fixed medium-wide, stationary, no cuts, no reverse angles. Use `Over-the-shoulder rear shot / back view` with strict `BODY LOCK` when looking away from camera.
+- **Camera Staging**: Side-profile two-shot in 3/4 angle. Angled profile stance so BOTH characters' full faces, eyes, and mouth expressions are clearly visible to the camera at the same time. NEITHER character turns their back to the camera. Fixed medium-wide, stationary, no cuts, no reverse angles. Use `Over-the-shoulder rear shot / back view` with strict `BODY LOCK` only when shouting upstairs from bottom step.
 - **Facial Emotion Lock**: Keep punchline recipient shocked/offended, do NOT let them laugh at their own insult.
 
 ---
