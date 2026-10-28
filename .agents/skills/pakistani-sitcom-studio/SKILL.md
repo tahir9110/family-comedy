@@ -40,8 +40,9 @@ This skill documents the end-to-end architecture, rules, and best practices esta
 1. **Side-Profile Two-Shot in 3/4 Angle (Both Faces Visible)**:
    - Always enforce: `Side-profile two-shot in 3/4 angle: The camera captures both characters from an angled profile perspective so BOTH characters' full faces, eyes, and mouth expressions are clearly visible to the camera simultaneously. NEITHER character has their back turned to the camera. Both faces are in clear view throughout the entire clip as they converse.`
    - This ensures both characters emote clearly and allows seamless post-production punch-in zooms in CapCut/Premiere without showing a character's back.
-2. **Fixed Perspective & No Cuts**:
-   - Always enforce: `Fixed medium-wide camera shot, stationary camera, no cuts, no close-ups, no reverse angles.`
+2. **Fixed Perspective & Optics**:
+   - Always enforce: `Camera & Optics: Shot on 50mm prime cinematic lens with natural shallow depth of field, softly blurred background. Fixed eye-level medium-wide shot with smooth stable framing, no jittery camera motion, no cuts, no reverse angles.`
+   - Lighting: `Lighting & Atmosphere: Soft natural directional lighting with gentle ambient shadows, warm cinematic color grade.`
 3. **Spatial Anchors**:
    - **Family Comedy**: `@Beta` screen-LEFT, `@Ammi` CENTER, `@Abbu` screen-RIGHT.
    - **Larka Larki**: `@Larka` screen-LEFT, `@Larki` screen-RIGHT.

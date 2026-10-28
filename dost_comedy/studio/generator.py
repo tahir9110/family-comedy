@@ -31,10 +31,12 @@ CHARACTERS = {
 }
 
 DEFAULT_PROMPT_CONSTRAINTS = (
-    "Fixed medium-wide shot, stationary camera at eye-level, no camera motion, no panning, no cuts. "
-    "Side-profile two-shot in open 3/4 angle: Both characters are angled toward the camera lens in an open 3/4 stance, so BOTH characters' full faces, eyes, and mouth expressions are clearly visible to the camera at the same time. NEITHER character turns their back to the camera. "
-    "Lighthearted Pakistani buddy comedy atmosphere: Warm, natural friendship camaraderie, casual banter, relaxed comedic postures. Strictly NO aggressive face-off, NO confrontational fighting stance, NO stiff awkward standing. "
-    "Background walls and surroundings are completely clean and plain with NO Arabic script, NO framed calligraphy, and NO religious verses on walls. Ultra photorealistic cinematic Pakistani comedy aesthetic, 9:16 vertical video composition."
+    "Camera & Optics: Shot on 50mm prime cinematic lens with subtle shallow depth of field, softly blurred background. "
+    "Fixed eye-level medium-wide shot with smooth stable framing, no jittery camera motion, no cuts, no reverse angles. "
+    "Side-profile two-shot in open 3/4 angle: Both characters stand or sit angled toward the camera lens in an open 3/4 stance, so BOTH characters' full faces, eyes, and mouth expressions are clearly visible to the camera at the same time. NEITHER character turns their back to the camera. "
+    "Lighting & Atmosphere: Soft natural directional morning lighting with gentle ambient shadows, warm cinematic color grade. "
+    "Buddy Comedy Tone: Lighthearted Pakistani buddy comedy atmosphere: Warm, natural friendship camaraderie, casual banter, relaxed comedic postures. Strictly NO aggressive face-off, NO confrontational fighting stance, NO stiff awkward standing. "
+    "Negative Constraints: Background walls and surroundings are completely clean and plain with NO Arabic script, NO framed calligraphy, and NO religious verses on walls. Strictly NO text on clothing, NO extra fingers, NO blurry facial artifacts. Ultra photorealistic cinematic Hollywood-level 8k aesthetic, 9:16 vertical video composition."
 )
 
 def get_next_episode_id():

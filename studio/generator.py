@@ -389,10 +389,11 @@ def format_family_multi_scene_prompts(data, wardrobe=None):
                 f"{wardrobe_desc}. "
                 f"{setting_prefix}{prop_desc}. "
                 f"{pos_desc}. "
-                f"Interior decor constraint: Plain clean walls with modern geometric wallpaper or simple landscape painting only. Absolutely NO Arabic script, NO calligraphy wall frames, NO religious verses, and NO text on walls. "
-                f"Fixed medium-wide camera shot, stationary camera, no cuts, no close-ups, no reverse angles. "
+                f"Camera & Optics: Shot on 50mm prime cinematic lens with natural shallow depth of field, softly blurred background. Fixed eye-level medium-wide shot with smooth stable framing, no jittery camera motion, no cuts, no reverse angles. "
+                f"Lighting & Atmosphere: Soft natural directional indoor lighting with gentle ambient shadows, warm cinematic Pakistani drama aesthetic. "
+                f"Negative Constraints: Interior decor constraint: Plain clean walls with modern geometric wallpaper or simple landscape painting only. Absolutely NO Arabic script, NO calligraphy wall frames, NO religious verses, NO text on clothing or walls, NO extra fingers or distorted limbs. "
                 f"{dialogue_script}"
-                f"Continuous action: Characters maintain their initial body orientation and direction throughout without turning towards the camera. No unscripted dialogue."
+                f"Continuous action: Characters maintain their initial body orientation and direction throughout without turning towards the camera. No unscripted dialogue. Ultra photorealistic 8k cinematic sitcom aesthetic, 9:16 vertical video composition."
             )
         else:
             # Scene 2, 3... Intelligent Continuation
