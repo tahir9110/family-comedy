@@ -469,8 +469,8 @@ def parse_with_openai_family(prompt):
         "Authorization": f"Bearer {key}"
     }
 
-    # Primary high-end models: gpt-5 first, then gpt-4o
-    openai_models = ["gpt-5", "gpt-4o", "gpt-4.1"]
+    # Primary high-end models: gpt-5.4 first, then gpt-5, then gpt-4o
+    openai_models = ["gpt-5.4", "gpt-5", "gpt-4o", "gpt-4.1"]
     for model in openai_models:
         payload = {
             "model": model,

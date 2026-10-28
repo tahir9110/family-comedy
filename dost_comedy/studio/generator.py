@@ -332,21 +332,25 @@ Return ONLY valid JSON in this exact schema:
     if key:
         url = "https://api.openai.com/v1/chat/completions"
         headers = {"Content-Type": "application/json", "Authorization": f"Bearer {key}"}
-        payload = {
-            "model": "gpt-4o",
-            "messages": [
-                {"role": "system", "content": "You are an expert Pakistani comedy script supervisor and director. Return only clean JSON."},
-                {"role": "user", "content": f"{prompt}\n\nRAW USER SCRIPT:\n{clean}"}
-            ],
-            "response_format": {"type": "json_object"}
-        }
-        try:
-            req = urllib.request.Request(url, data=json.dumps(payload).encode("utf-8"), headers=headers)
-            with urllib.request.urlopen(req, timeout=15) as resp:
-                res = json.loads(resp.read().decode("utf-8"))
-                ai_result = json.loads(res["choices"][0]["message"]["content"])
-        except Exception as e:
-            print("[OpenAI Parse Error]:", e)
+        openai_models = ["gpt-5.4", "gpt-5", "gpt-4o"]
+        for model in openai_models:
+            payload = {
+                "model": model,
+                "messages": [
+                    {"role": "system", "content": "You are an expert Pakistani comedy script supervisor and director. Return only clean JSON."},
+                    {"role": "user", "content": f"{prompt}\n\nRAW USER SCRIPT:\n{clean}"}
+                ],
+                "response_format": {"type": "json_object"}
+            }
+            try:
+                req = urllib.request.Request(url, data=json.dumps(payload).encode("utf-8"), headers=headers)
+                with urllib.request.urlopen(req, timeout=25) as resp:
+                    res = json.loads(resp.read().decode("utf-8"))
+                    ai_result = json.loads(res["choices"][0]["message"]["content"])
+                    print(f"[OpenAI Success]: Script processed using {model}")
+                    break
+            except Exception as e:
+                print(f"[OpenAI Error on {model}]:", e)
 
     if not ai_result:
         gemini_key = get_gemini_api_key()
