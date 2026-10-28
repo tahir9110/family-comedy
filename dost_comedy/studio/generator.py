@@ -27,6 +27,34 @@ CHARACTERS = {
         "role": "The Sarcastic Best Friend",
         "age": "24-25",
         "description": "Keep facial features consistent with the attached @Mani references. @Mani is a 25-year-old Pakistani young man with neatly groomed pompadour hairstyle, well-trimmed short beard and mustache, wearing an open denim jacket over a mustard yellow t-shirt. Sarcastic, skeptical, deadpan, and easily bewildered."
+    },
+    "@Judge": {
+        "name": "Judge",
+        "tag": "@Judge",
+        "role": "Pakistani High Court Judge",
+        "age": "55-60",
+        "description": "Keep facial features consistent with the attached @Judge references. @Judge is a dignified 55-year-old Pakistani High Court judge with neat silver-grey side-parted hair, trim grey mustache, wire-rimmed spectacles, wearing a formal black judicial coat and white court advocate neckband collar over a dark suit. Authoritative, composed, and stern."
+    },
+    "@Doctor": {
+        "name": "Doctor",
+        "tag": "@Doctor",
+        "role": "Pakistani Clinic Doctor",
+        "age": "45-50",
+        "description": "Keep facial features consistent with the attached @Doctor references. @Doctor is a 45-year-old Pakistani male doctor with neatly groomed hair, wearing a white medical lab coat with a stethoscope around his neck over a formal dress shirt. Professional, puzzled, and attentive."
+    },
+    "@Police": {
+        "name": "Police Officer",
+        "tag": "@Police",
+        "role": "Pakistani Police Inspector",
+        "age": "40-45",
+        "description": "Keep facial features consistent with the attached @Police references. @Police is a 40-year-old Pakistani police officer with a sharp mustache, wearing a traditional olive-khaki Pakistan Police uniform with shoulder badges. Skeptical, commanding, and easily baffled."
+    },
+    "@Teacher": {
+        "name": "School Master",
+        "tag": "@Teacher",
+        "role": "Pakistani School Teacher",
+        "age": "50-55",
+        "description": "Keep facial features consistent with the attached @Teacher references. @Teacher is a 50-year-old Pakistani school master with spectacles, wearing a traditional formal shalwar kameez with a Nehru waistcoat. Strict, disciplined, and expressive."
     }
 }
 
@@ -34,10 +62,18 @@ DEFAULT_PROMPT_CONSTRAINTS = (
     "Camera & Optics: Shot on 50mm prime cinematic lens with subtle shallow depth of field, softly blurred background. "
     "Fixed eye-level medium-wide shot with smooth stable framing, no jittery camera motion, no cuts, no reverse angles. "
     "Side-profile two-shot in open 3/4 angle: Both characters stand or sit angled toward the camera lens in an open 3/4 stance, so BOTH characters' full faces, eyes, and mouth expressions are clearly visible to the camera at the same time. NEITHER character turns their back to the camera. "
-    "Lighting & Atmosphere: Soft natural directional morning lighting with gentle ambient shadows, warm cinematic color grade. "
-    "Buddy Comedy Tone: Lighthearted Pakistani buddy comedy atmosphere: Warm, natural friendship camaraderie, casual banter, relaxed comedic postures. Strictly NO aggressive face-off, NO confrontational fighting stance, NO stiff awkward standing. "
+    "Lighting & Atmosphere: Soft natural directional lighting with gentle ambient shadows, warm cinematic color grade. "
+    "Tone & Performance: Expressive comedic timing, situational Pakistani comedy. Strictly NO aggressive face-off, NO physical violence, NO confrontational fighting stance. "
     "Negative Constraints: Background walls and surroundings are completely clean and plain with NO Arabic script, NO framed calligraphy, and NO religious verses on walls. Strictly NO text on clothing, NO extra fingers, NO blurry facial artifacts. Ultra photorealistic cinematic Hollywood-level 8k aesthetic, 9:16 vertical video composition."
 )
+
+def get_character_desc(tag):
+    if tag in CHARACTERS:
+        return CHARACTERS[tag]["description"]
+    for k, v in CHARACTERS.items():
+        if k.lower().replace("@", "") in tag.lower():
+            return v["description"]
+    return f"Keep facial features consistent with the attached {tag} references."
 
 def get_openai_api_key():
     for p in [OPENAI_KEY_PATH, ROOT_DIR / "openai key.txt", Path("openai key.txt")]:
@@ -91,11 +127,17 @@ def get_joke_by_id(joke_id):
             return item
     return None
 
-def infer_staging(location, prop):
+def infer_staging(location, prop, s1_tag="@Mani", s2_tag="@Aqib"):
     loc_l = location.lower()
     prop_l = prop.lower()
 
-    if "bike" in loc_l or "bike" in prop_l or "motorcycle" in loc_l or "motorcycle" in prop_l or "petrol" in prop_l:
+    if "judge" in loc_l or "judge" in prop_l or "court" in loc_l or "court" in prop_l or "phansi" in prop_l or "phansi" in loc_l or "adalat" in loc_l or s1_tag == "@Judge" or s2_tag == "@Judge":
+        return (
+            "Physical Staging: In a formal Pakistani High Court courtroom, @Judge sits with dignified authority behind an elevated dark polished mahogany judicial bench with a wooden gavel and legal case law files. "
+            "@Aqib stands inside the traditional wooden accused dock / witness box (kathehra) angled in an open 3/4 profile toward the bench and camera lens, "
+            "resting his hands casually on the wooden railing with an innocent, witty deadpan smirk as he delivers his audacious answer. Both faces and reactions are clearly visible to the camera. Strictly NO outdoor hanging scaffold, NO ropes, NO physical violence."
+        )
+    elif "bike" in loc_l or "bike" in prop_l or "motorcycle" in loc_l or "motorcycle" in prop_l or "petrol" in prop_l:
         return (
             "Physical Staging: @Aqib is actively seated mounted on the black saddle of the parked motorcycle, "
             "his hands resting on the chrome handlebars and feet touching the ground, leaning slightly over the tank with an innocent, tired comedic expression. "
@@ -107,6 +149,16 @@ def infer_staging(location, prop):
             "Physical Staging: Both @Aqib and @Mani are comfortably seated on a rustic wooden bench at a 3/4 angle to the camera. "
             "Each friend holds a clear glass cup of hot steaming doodh patti tea. Relaxed seated posture, laughing and bantering like close friends."
         )
+    elif "doctor" in loc_l or "clinic" in loc_l or "hospital" in loc_l or s1_tag == "@Doctor" or s2_tag == "@Doctor":
+        return (
+            "Physical Staging: In a clean Pakistani medical clinic, @Doctor sits behind a consultation desk with a stethoscope and medical charts. "
+            "@Aqib sits casually on the patient chair across the desk in an open 3/4 angle to the camera, explaining his condition with animated comedic hand gestures. Both faces clearly visible."
+        )
+    elif "police" in loc_l or "thana" in loc_l or s1_tag == "@Police" or s2_tag == "@Police":
+        return (
+            "Physical Staging: Inside a Pakistani police station (thana), @Police sits behind an official wooden desk with case registers. "
+            "@Aqib stands in front of the desk in an open 3/4 stance facing the officer and camera, defending himself with witty humorous hand gestures."
+        )
     elif "fan" in prop_l or "jugaad" in loc_l:
         return (
             "Physical Staging: @Aqib stands under the ceiling fan holding a long broomstick handle reaching up to nudge the fan blade with serious comic focus. "
@@ -114,34 +166,48 @@ def infer_staging(location, prop):
         )
     elif "sofa" in loc_l or "living" in loc_l or "room" in loc_l:
         return (
-            "Physical Staging: Both friends are seated casually on a comfortable sofa in an open 3/4 stance toward the camera lens. "
+            "Physical Staging: Both characters are seated casually on a comfortable sofa in an open 3/4 stance toward the camera lens. "
             "Natural relaxed sitting postures with hand gestures, enjoying lighthearted comedic banter."
         )
     else:
         return (
-            "Physical Staging: The two friends interact naturally in an open 3/4 stance toward the camera lens, "
-            "with casual relaxed body language, expressive hand gestures, and playful buddy camaraderie. Strictly NO stiff face-off."
+            "Physical Staging: The two characters interact naturally in an open 3/4 stance toward the camera lens, "
+            "with casual relaxed body language, expressive hand gestures, and playful comedic camaraderie. Strictly NO stiff face-off."
         )
 
 def map_tag(spk):
     s = str(spk).lower()
-    if "aqib" in s or "shani" in s or "bonda" in s or "banda" in s:
+    if "aqib" in s or "shani" in s or "bonda" in s or "banda" in s or "mulzim" in s or "accused" in s or "aadmi" in s:
         return "@Aqib"
-    elif "mani" in s or "dost" in s:
+    elif "judge" in s or "jaj" in s or "adalat" in s:
+        return "@Judge"
+    elif "doctor" in s or "dr" in s:
+        return "@Doctor"
+    elif "police" in s or "inspector" in s or "havaldar" in s or "thana" in s:
+        return "@Police"
+    elif "teacher" in s or "master" in s or "ustad" in s:
+        return "@Teacher"
+    elif "mani" in s or "dost" in s or "friend" in s:
         return "@Mani"
-    return spk
+    return f"@{spk.replace('@', '').strip().capitalize()}"
 
 def build_image_prompt(speaker_00, speaker_03, location, prop, staging=None):
-    """Step 1: Keyframe Image Prompt (Generate still image in Flow first to verify face, bike, and staging)."""
-    aqib_desc = CHARACTERS["@Aqib"]["description"]
-    mani_desc = CHARACTERS["@Mani"]["description"]
+    """Step 1: Keyframe Image Prompt (Generate still image in Flow first to verify face, setting, and staging)."""
+    s1_tag = map_tag(speaker_00)
+    s2_tag = map_tag(speaker_03)
+
+    desc1 = get_character_desc(s1_tag)
+    desc2 = get_character_desc(s2_tag)
+
     if not staging:
-        staging = infer_staging(location, prop)
+        staging = infer_staging(location, prop, s1_tag, s2_tag)
+
+    loc_str = location if location.lower().startswith("pakistani") else f"Pakistani {location}"
 
     return (
         f"Cinematic keyframe production still photograph. "
-        f"{aqib_desc} {mani_desc} "
-        f"Setting: Pakistani {location} with {prop} clearly featured in the frame. "
+        f"{desc1} {desc2} "
+        f"Setting: {loc_str} with {prop} clearly featured in the frame. "
         f"{staging} "
         f"{DEFAULT_PROMPT_CONSTRAINTS} "
         f"Single still frame keyframe photograph, razor sharp facial focus, natural eyes looking toward scene, perfectly positioned for subsequent video animation."
@@ -153,30 +219,32 @@ def build_i2v_prompt(speaker_00, dialogue_00, speaker_03, dialogue_03):
     s2_tag = map_tag(speaker_03)
 
     return (
-        f"Animate seamlessly from this exact starting keyframe image, strictly maintaining identical character faces, clothing, motorbike, and lighting. "
+        f"Animate seamlessly from this exact starting keyframe image, strictly maintaining identical character faces, clothing, environment, and lighting. "
         f"Fixed medium-wide stationary eye-level camera, no cuts, no panning, no camera motion. "
-        f"At 00-03 seconds: {s1_tag} speaks first with full natural mouth articulation, casual friendly smirk, and talking hand motion: \"{dialogue_00}\", while {s2_tag} listens with responsive amused reaction. "
-        f"At 03-08 seconds: {s2_tag} delivers their punchline with dramatic comedic facial expression and synchronized mouth movement: \"{dialogue_03}\", while {s1_tag} reacts in bewildered comedic shock or playful disbelief. "
+        f"At 00-03 seconds: {s1_tag} speaks first with full natural mouth articulation, serious or comedic facial expression, and talking hand motion: \"{dialogue_00}\", while {s2_tag} listens with responsive reaction. "
+        f"At 03-08 seconds: {s2_tag} delivers their punchline with dramatic comedic facial expression and synchronized mouth movement: \"{dialogue_03}\", while {s1_tag} reacts in bewildered comedic shock or disbelief. "
         f"Continuous 10-second single take, photorealistic smooth motion."
     )
 
 def build_flow_prompt(speaker_00, dialogue_00, speaker_03, dialogue_03, location, prop, staging=None):
     """Direct All-In-One Text-to-Video Prompt."""
-    aqib_desc = CHARACTERS["@Aqib"]["description"]
-    mani_desc = CHARACTERS["@Mani"]["description"]
     s1_tag = map_tag(speaker_00)
     s2_tag = map_tag(speaker_03)
+    desc1 = get_character_desc(s1_tag)
+    desc2 = get_character_desc(s2_tag)
 
     if not staging:
-        staging = infer_staging(location, prop)
+        staging = infer_staging(location, prop, s1_tag, s2_tag)
+
+    loc_str = location if location.lower().startswith("pakistani") else f"Pakistani {location}"
 
     return (
-        f"{aqib_desc} {mani_desc} "
-        f"Setting: Pakistani {location} with {prop} visible in the scene. "
+        f"{desc1} {desc2} "
+        f"Setting: {loc_str} with {prop} visible in the scene. "
         f"{staging} "
         f"{DEFAULT_PROMPT_CONSTRAINTS} "
-        f"At 00-03 seconds: {s1_tag} delivers their line with full expressive mouth articulation, casual friendly smirk, and talking motion: \"{dialogue_00}\", while {s2_tag} listens with responsive amused reaction. "
-        f"At 03-08 seconds: {s2_tag} delivers their punchline with dramatic comedic facial expression and synchronized mouth movement: \"{dialogue_03}\", while {s1_tag} reacts in bewildered comedic shock or playful disbelief. "
+        f"At 00-03 seconds: {s1_tag} delivers their line with full expressive mouth articulation and talking motion: \"{dialogue_00}\", while {s2_tag} listens with responsive reaction. "
+        f"At 03-08 seconds: {s2_tag} delivers their punchline with dramatic comedic facial expression and synchronized mouth movement: \"{dialogue_03}\", while {s1_tag} reacts in bewildered comedic shock or disbelief. "
         f"Strictly continuous 10-second single take."
     )
 
@@ -209,23 +277,33 @@ def smart_parse_raw_text(raw_text):
     
     # Try AI parse first
     prompt = f"""You are an expert Pakistani comedy dialogue supervisor.
-The user provided a raw joke or comedy dialogue between two Pakistani friends: @Aqib (the witty, street-smart friend, brother Aqib) and @Mani (the sarcastic buddy).
+The user provided a raw joke or comedy dialogue.
+The main character who delivers the witty comedic punchline is always @Aqib (Pakistani young man, brother Aqib).
+The second character can be:
+- @Mani (if it is a casual buddy comedy joke between two friends)
+- @Judge (if the joke is in a courtroom, trial, or sentencing scenario with a judge)
+- @Doctor (if the joke is in a medical clinic or hospital)
+- @Police (if the joke is with a police officer or thana)
+- @Teacher (if the joke is in a school or classroom)
 
 STRICT RULES:
 1. Preserve 100% of user's core comedic premise and joke.
-2. Short-Line Expansion: If any line is 1-2 words (like "Kyun?", "Kya?", "Achha?"), expand it to 4-5 words (e.g. "ارے پر کیوں بھائی؟ مجھے وجہ تو بتاؤ!").
+2. Short-Line Expansion: If any line is 1-2 words (like "Kyun?", "Kya?", "Achha?"), expand it to 4-5 words (e.g. "ارے پر کیوں جناب؟ مجھے وجہ تو بتائیں!").
 3. Fix grammar and typos. Use pure Urdu script with clean Roman Urdu in parentheses: 'اردو مکالمہ (Clean Roman Urdu)'.
-4. Detect suitable Pakistani location (e.g., Roadside Honda CD70 motorcycle, Roadside Chai Dhaba, Bachelor Room, Street Corner) and props.
-5. Character roles: @Mani usually asks the question or makes a sarcastic remark, and @Aqib delivers the witty punchline (or vice versa according to script).
-6. Return ONLY valid JSON in this exact structure:
+4. Detect suitable Pakistani location and props:
+   - For court/judge jokes: location="Pakistani High Court courtroom", prop="Elevated mahogany judicial bench, wooden gavel, and wooden accused dock (kathehra)". NEVER suggest outdoor hanging scaffolds or ropes.
+   - For hospital/doctor jokes: location="Pakistani clinic consultation room", prop="Doctor consultation desk and stethoscope".
+   - For police jokes: location="Pakistani police station (thana)", prop="Official wooden desk and case files".
+   - For friend jokes: location="Streetside curb near a parked Honda CD70 motorbike" or "Roadside Chai Dhaba", prop="Honda CD70 motorbike" or "Chai glasses".
+5. Return ONLY valid JSON in this exact structure:
 {{
   "title": "Punchy Urdu/English Title",
-  "location": "Streetside curb next to an old CD70 motorbike",
-  "prop": "Red Honda CD70 motorbike",
-  "speaker_00": "Mani",
-  "dialogue_00": "اوئے عاقب، کیا ہوا؟ پٹرول ختم ہو گیا ہے کیا؟ (Oye Aqib, kya hua? Petrol khatam ho gaya hai kya?)",
+  "location": "Pakistani High Court courtroom",
+  "prop": "Elevated mahogany judicial bench, wooden gavel, and wooden accused dock",
+  "speaker_00": "Judge",
+  "dialogue_00": "اردو مکالمہ (Clean Roman Urdu)",
   "speaker_03": "Aqib",
-  "dialogue_03": "نہیں بھائی مانی، میری موٹر سائیکل کا آج نفلی روزہ ہے! (Nahi bhai Mani, meri motorcycle ka aaj nafli roza hai!)"
+  "dialogue_03": "اردو مکالمہ (Clean Roman Urdu)"
 }}"""
 
     ai_result = None
