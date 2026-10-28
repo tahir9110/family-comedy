@@ -6,15 +6,15 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
-  <title>Dost Comedy Studio | Image-First & Video Workflow (Aqib & Mani)</title>
+  <title>Dost Comedy Studio | Smart Script to Image & Video Prompts</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Noto+Nastaliq+Urdu:wght@400;700&display=swap" rel="stylesheet">
   <style>
     :root {
       --bg-dark: #0a0e17;
-      --card-bg: rgba(20, 27, 45, 0.75);
-      --border-color: rgba(255, 255, 255, 0.08);
+      --card-bg: rgba(20, 27, 45, 0.85);
+      --border-color: rgba(255, 255, 255, 0.09);
       --accent-blue: #00d2ff;
       --accent-purple: #9d4edd;
       --accent-gold: #ffb703;
@@ -31,8 +31,8 @@
       display: flex;
       flex-direction: column;
       overflow-x: hidden;
-      background-image: radial-gradient(circle at 15% 20%, rgba(0, 210, 255, 0.08) 0%, transparent 40%),
-                        radial-gradient(circle at 85% 70%, rgba(157, 78, 221, 0.08) 0%, transparent 40%);
+      background-image: radial-gradient(circle at 15% 15%, rgba(0, 210, 255, 0.08) 0%, transparent 40%),
+                        radial-gradient(circle at 85% 75%, rgba(157, 78, 221, 0.08) 0%, transparent 40%);
     }
     header {
       padding: 1.25rem 2.5rem;
@@ -41,13 +41,13 @@
       justify-content: space-between;
       align-items: center;
       backdrop-filter: blur(12px);
-      background: rgba(10, 14, 23, 0.85);
+      background: rgba(10, 14, 23, 0.9);
       position: sticky;
       top: 0;
       z-index: 100;
     }
     .brand-title {
-      font-size: 1.4rem;
+      font-size: 1.45rem;
       font-weight: 800;
       background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
       -webkit-background-clip: text;
@@ -67,26 +67,26 @@
     }
     .container {
       max-width: 1400px;
+      width: 100%;
       margin: 1.5rem auto;
       padding: 0 1.5rem;
-      display: grid;
-      grid-template-columns: 380px 1fr;
+      display: flex;
+      flex-direction: column;
       gap: 1.5rem;
       flex: 1;
     }
-    .full-width { grid-column: 1 / -1; }
     .card {
       background: var(--card-bg);
       border: 1px solid var(--border-color);
       border-radius: 16px;
-      padding: 1.25rem;
+      padding: 1.4rem;
       backdrop-filter: blur(16px);
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
     }
     .card-title {
-      font-size: 1.1rem;
+      font-size: 1.15rem;
       font-weight: 700;
-      margin-bottom: 0.75rem;
+      margin-bottom: 0.85rem;
       display: flex;
       align-items: center;
       gap: 0.5rem;
@@ -98,10 +98,10 @@
       gap: 1rem;
     }
     .char-card {
-      background: rgba(255, 255, 255, 0.03);
+      background: rgba(255, 255, 255, 0.02);
       border: 1px solid var(--border-color);
       border-radius: 12px;
-      padding: 1rem;
+      padding: 0.9rem 1.1rem;
       border-left: 4px solid var(--accent-blue);
     }
     .char-card.mani {
@@ -120,7 +120,7 @@
       text-transform: uppercase;
       letter-spacing: 0.05em;
       color: var(--accent-gold);
-      margin: 0.2rem 0 0.4rem;
+      margin: 0.15rem 0 0.35rem;
       font-weight: 600;
     }
     .char-desc {
@@ -128,125 +128,73 @@
       color: var(--text-muted);
       line-height: 1.45;
     }
-    .jokes-list {
-      display: flex;
-      flex-direction: column;
-      gap: 0.65rem;
-      max-height: 580px;
-      overflow-y: auto;
-      padding-right: 0.35rem;
-    }
-    .joke-item {
-      background: rgba(255, 255, 255, 0.02);
-      border: 1px solid var(--border-color);
-      padding: 0.9rem 1.1rem;
-      border-radius: 10px;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    .joke-item:hover, .joke-item.active {
-      background: rgba(0, 210, 255, 0.08);
-      border-color: var(--accent-blue);
-      transform: translateY(-2px);
-    }
-    .joke-title-urdu {
-      font-family: 'Noto Nastaliq Urdu', serif;
-      font-size: 1rem;
-      direction: rtl;
-      color: #fff;
-    }
-    .joke-sub {
-      font-size: 0.75rem;
-      color: var(--text-muted);
-      margin-top: 0.2rem;
-    }
-    /* Tabs for Workflow */
-    .tabs-nav {
-      display: flex;
-      gap: 0.5rem;
-      border-bottom: 1px solid var(--border-color);
-      margin-bottom: 1rem;
-      padding-bottom: 0.5rem;
-    }
-    .tab-btn {
-      background: transparent;
-      border: 1px solid transparent;
-      color: var(--text-muted);
-      padding: 0.6rem 1.25rem;
-      border-radius: 8px;
-      font-weight: 600;
-      font-size: 0.9rem;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 0.4rem;
-      transition: all 0.2s;
-    }
-    .tab-btn:hover {
-      color: var(--text-main);
-      background: rgba(255, 255, 255, 0.04);
-    }
-    .tab-btn.active {
-      color: #fff;
-      background: rgba(0, 210, 255, 0.15);
-      border-color: var(--accent-blue);
-    }
-    .step-banner {
-      background: rgba(16, 185, 129, 0.1);
-      border: 1px solid rgba(16, 185, 129, 0.3);
-      padding: 0.75rem 1rem;
-      border-radius: 8px;
-      font-size: 0.85rem;
-      color: #34d399;
-      margin-bottom: 0.75rem;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-    .step-banner.step2 {
-      background: rgba(157, 78, 221, 0.1);
-      border-color: rgba(157, 78, 221, 0.3);
-      color: #c084fc;
-    }
-    .prompt-box {
+    /* Smart Paste Box */
+    .smart-input-box {
       width: 100%;
-      height: 190px;
+      height: 95px;
       background: #060910;
       border: 1px solid var(--border-color);
       border-radius: 10px;
-      color: #38bdf8;
-      font-family: monospace;
-      font-size: 0.85rem;
-      line-height: 1.5;
-      padding: 0.85rem;
+      color: #fff;
+      font-family: 'Noto Nastaliq Urdu', 'Outfit', sans-serif;
+      font-size: 1rem;
+      line-height: 1.8;
+      padding: 0.9rem 1.25rem;
       resize: vertical;
-      margin-bottom: 0.75rem;
       outline: none;
+      direction: rtl;
     }
-    .prompt-box:focus {
+    .smart-input-box:focus {
       border-color: var(--accent-blue);
-      box-shadow: 0 0 15px rgba(0, 210, 255, 0.2);
+      box-shadow: 0 0 15px rgba(0, 210, 255, 0.25);
+    }
+    .quick-pills-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-top: 0.85rem;
+      align-items: center;
+    }
+    .quick-pill {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border-color);
+      padding: 0.45rem 0.9rem;
+      border-radius: 9999px;
+      font-size: 0.85rem;
+      color: var(--text-main);
+      cursor: pointer;
+      font-family: 'Noto Nastaliq Urdu', sans-serif;
+      direction: rtl;
+      transition: all 0.2s;
+    }
+    .quick-pill:hover, .quick-pill.active {
+      background: rgba(0, 210, 255, 0.15);
+      border-color: var(--accent-blue);
+      color: #fff;
+      transform: translateY(-2px);
     }
     .btn {
       background: linear-gradient(135deg, var(--accent-blue), #0284c7);
       color: #fff;
       border: none;
-      padding: 0.65rem 1.4rem;
-      border-radius: 8px;
-      font-weight: 600;
+      padding: 0.75rem 1.5rem;
+      border-radius: 9px;
+      font-weight: 700;
       cursor: pointer;
-      font-size: 0.9rem;
+      font-size: 0.95rem;
       display: inline-flex;
       align-items: center;
-      gap: 0.4rem;
+      gap: 0.5rem;
       transition: all 0.2s;
     }
     .btn:hover {
       filter: brightness(1.15);
       transform: scale(1.02);
+    }
+    .btn-magic {
+      background: linear-gradient(135deg, #ec4899, #8b5cf6);
+      padding: 0.85rem 1.75rem;
+      font-size: 1rem;
     }
     .btn-green {
       background: linear-gradient(135deg, var(--accent-green), #059669);
@@ -254,47 +202,70 @@
     .btn-purple {
       background: linear-gradient(135deg, var(--accent-purple), #7b2cbf);
     }
-    /* Image Preview & Dropzone */
-    .preview-section {
-      margin-top: 1rem;
-      padding-top: 1rem;
-      border-top: 1px solid var(--border-color);
+    /* Two-Prompt Grid */
+    .prompts-dual-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
     }
-    .preview-container {
-      display: flex;
-      gap: 1rem;
-      align-items: center;
+    @media (max-width: 900px) {
+      .prompts-dual-grid { grid-template-columns: 1fr; }
     }
-    .dropzone {
-      flex: 1;
-      border: 2px dashed rgba(255, 255, 255, 0.15);
-      border-radius: 10px;
-      padding: 1.25rem;
-      text-align: center;
-      cursor: pointer;
-      transition: all 0.2s;
-      background: rgba(255, 255, 255, 0.02);
-    }
-    .dropzone:hover {
-      border-color: var(--accent-blue);
-      background: rgba(0, 210, 255, 0.04);
-    }
-    .img-preview-box {
-      width: 140px;
-      height: 200px;
-      border-radius: 10px;
+    .prompt-card {
+      background: rgba(10, 14, 23, 0.7);
       border: 1px solid var(--border-color);
-      overflow: hidden;
-      background: #000;
+      border-radius: 12px;
+      padding: 1.25rem;
       display: flex;
-      align-items: center;
-      justify-content: center;
-      position: relative;
+      flex-direction: column;
     }
-    .img-preview-box img {
+    .prompt-card.image-card {
+      border-top: 4px solid var(--accent-green);
+    }
+    .prompt-card.video-card {
+      border-top: 4px solid var(--accent-purple);
+    }
+    .prompt-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.65rem;
+    }
+    .prompt-tag {
+      font-size: 0.75rem;
+      font-weight: 800;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      padding: 0.25rem 0.65rem;
+      border-radius: 6px;
+    }
+    .image-tag { background: rgba(16, 185, 129, 0.15); color: #34d399; }
+    .video-tag { background: rgba(157, 78, 221, 0.15); color: #c084fc; }
+    .prompt-hint {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+      margin-bottom: 0.75rem;
+    }
+    .prompt-textarea {
       width: 100%;
-      height: 100%;
-      object-fit: cover;
+      height: 230px;
+      background: #04070d;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      color: #38bdf8;
+      font-family: monospace;
+      font-size: 0.85rem;
+      line-height: 1.5;
+      padding: 0.85rem;
+      resize: vertical;
+      outline: none;
+      margin-bottom: 0.85rem;
+      flex: 1;
+    }
+    .prompt-textarea:focus {
+      border-color: var(--accent-blue);
+      box-shadow: 0 0 12px rgba(0, 210, 255, 0.2);
     }
     .notification {
       position: fixed;
@@ -308,27 +279,6 @@
       box-shadow: 0 10px 25px rgba(16, 185, 129, 0.4);
       display: none;
       z-index: 1000;
-    }
-    /* Downloads list */
-    .dl-list {
-      display: flex;
-      gap: 0.5rem;
-      overflow-x: auto;
-      padding-bottom: 0.5rem;
-      margin-top: 0.5rem;
-    }
-    .dl-item {
-      background: rgba(255, 255, 255, 0.04);
-      border: 1px solid var(--border-color);
-      padding: 0.5rem 0.75rem;
-      border-radius: 6px;
-      font-size: 0.75rem;
-      white-space: nowrap;
-      cursor: pointer;
-    }
-    .dl-item:hover {
-      background: rgba(0, 210, 255, 0.1);
-      border-color: var(--accent-blue);
     }
   </style>
 </head>
@@ -347,7 +297,7 @@
   <div class="container">
 
     <!-- CHARACTERS REFERENCE SUMMARY -->
-    <div class="card full-width">
+    <div class="card">
       <div class="card-title">🎭 Permanent Cast (Hollywood 5-Star Character Locking)</div>
       <div class="char-grid">
         <div class="char-card">
@@ -363,87 +313,88 @@
       </div>
     </div>
 
-    <!-- LEFT COLUMN: Preloaded Viral Jokes -->
+    <!-- SMART PASTE & RAW JOKE PARSER (JUST LIKE FAMILY COMEDY!) -->
     <div class="card">
-      <div class="card-title">📂 Pre-loaded Friend Jokes</div>
-      <div class="jokes-list" id="jokes-container">
-        <!-- Loaded via JS -->
+      <div class="card-title">✨ Paste Any Raw Joke / Script (AI Fix Grammar & Line Expansion)</div>
+      <textarea id="smart-raw-input" class="smart-input-box" placeholder="یہاں کوئی بھی لطیفہ، واٹس ایپ میسج یا کچا آئیڈیا پیسٹ کریں... (مثال: بندہ بائیک پر بیٹھا ہے، دوست کہتا ہے پٹرول ختم ہو گیا؟ وہ کہتا ہے نہیں بائیک کا روزہ ہے)"></textarea>
+      
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 0.85rem; flex-wrap: wrap; gap: 0.75rem;">
+        <button class="btn btn-magic" onclick="handleSmartParse()" id="btn-parse">
+          ✨ Magic Auto-Convert to Image & Video Prompts
+        </button>
+        <span style="font-size: 0.82rem; color: var(--text-muted);">OpenAI GPT-4o / Gemini Auto-Grammar & TTS Safe</span>
+      </div>
+
+      <!-- Quick 1-Click Jokes Bar -->
+      <div class="quick-pills-row">
+        <span style="font-size: 0.82rem; color: var(--text-muted); margin-right: 0.25rem;">یا نیچے دیے گئے وائرل لطیفوں پر کلک کریں:</span>
+        <span class="quick-pill active" onclick="loadJokeById('joke_1_bike', this)">🛵 موٹر سائیکل کا روزہ</span>
+        <span class="quick-pill" onclick="loadJokeById('joke_2_loadshedding', this)">🕯️ لوڈشیڈنگ اور موم بتی</span>
+        <span class="quick-pill" onclick="loadJokeById('joke_3_jugaad_fan', this)">🌀 پاکستانی جگاڑ پنکھا</span>
+        <span class="quick-pill" onclick="loadJokeById('joke_4_chai_summer', this)">☕ 45 ڈگری اور کڑک چائے</span>
+        <span class="quick-pill" onclick="loadJokeById('joke_5_rickshaw_hurry', this)">🛺 رکشے والے کی جلدی</span>
+        <span class="quick-pill" onclick="loadJokeById('joke_6_guest_sharbat', this)">🍹 مہمان اور ٹھنڈا شربت</span>
       </div>
     </div>
 
-    <!-- RIGHT COLUMN: 2-Step Production Pipeline -->
-    <div class="card">
-      <div class="card-title" id="current-joke-title">⚡ 2-Step Production Pipeline</div>
+    <!-- CURRENT EPISODE TITLE BANNER -->
+    <div style="display: flex; justify-content: space-between; align-items: center; padding: 0 0.5rem;">
+      <h2 id="active-title" style="font-size: 1.25rem; font-weight: 700; color: var(--accent-gold);">
+        🛵 موٹر سائیکل کا روزہ (Motorcycle Roza)
+      </h2>
+      <span id="active-meta" style="font-size: 0.85rem; color: var(--text-muted);">
+        📍 Streetside curb • 🎒 Red Honda CD70 motorbike
+      </span>
+    </div>
 
-      <!-- TABS -->
-      <div class="tabs-nav">
-        <button class="tab-btn active" id="tab-step1" onclick="switchTab('step1')">📸 STEP 1: Generate Image First</button>
-        <button class="tab-btn" id="tab-step2" onclick="switchTab('step2')">🎬 STEP 2: Animate to Video (I2V)</button>
-        <button class="tab-btn" id="tab-step3" onclick="switchTab('step3')">⚡ Direct Video (T2V)</button>
+    <!-- DUAL PROMPTS CONTAINER (BOTH PROMPTS DIRECTLY ON SCREEN!) -->
+    <div class="prompts-dual-grid">
+
+      <!-- PROMPT 1: KEYFRAME IMAGE PROMPT -->
+      <div class="prompt-card image-card">
+        <div class="prompt-header">
+          <span class="prompt-tag image-tag">📸 PROMPT 1: KEYFRAME IMAGE (T2I)</span>
+          <span style="font-size: 0.8rem; color: #34d399; font-weight: 600;">مرحلہ ۱: پہلے تصویر بنائیں</span>
+        </div>
+        <p class="prompt-hint">
+          گوگل فلو کے <strong>Image Mode</strong> میں یہ پرامپٹ لگائیں۔ عاقب بھائی کا چہرہ، مونچھیں، داڑھی، اور بائیک کی سیٹ پر بیٹھنے کا فریم چیک کریں۔
+        </p>
+        <textarea id="prompt-image" class="prompt-textarea" placeholder="Step 1 Keyframe Image Prompt..."></textarea>
+        <button class="btn btn-green" onclick="copyText('prompt-image')">
+          📋 Copy Image Prompt for Google Flow
+        </button>
       </div>
 
-      <!-- VIEW 1: Image Keyframe Prompt -->
-      <div id="view-step1">
-        <div class="step-banner">
-          <span>💡</span> <strong>پہلا مرحلہ:</strong> گوگل فلو میں پہلے یہ پرامپٹ لگا کر صرف <strong>تصویر (Image)</strong> بنائیں اور تسلی کریں کہ عاقب بھائی کا چہرہ، مونچھیں، بائیک اور اینگل 100٪ ٹھیک ہے۔
+      <!-- PROMPT 2: VIDEO ANIMATION / LIP-SYNC PROMPT -->
+      <div class="prompt-card video-card">
+        <div class="prompt-header">
+          <span class="prompt-tag video-tag">🎬 PROMPT 2: VIDEO ANIMATION (I2V)</span>
+          <span style="font-size: 0.8rem; color: #c084fc; font-weight: 600;">مرحلہ ۲: تصویر کو اینیمیٹ کریں</span>
         </div>
-        <textarea id="prompt-image" class="prompt-box" placeholder="Step 1 Keyframe Image Prompt..."></textarea>
-        <div style="display: flex; gap: 0.75rem;">
-          <button class="btn btn-green" onclick="copyText('prompt-image')">📋 Copy Image Prompt for Flow</button>
-        </div>
-
-        <!-- Image Preview Dropzone -->
-        <div class="preview-section">
-          <div style="font-size: 0.85rem; font-weight: 600; margin-bottom: 0.5rem; color: var(--text-muted);">
-            📸 فلو سے جنریٹ شدہ تصویر یہاں ڈراپ یا اپلوڈ کر کے تسلی کریں:
-          </div>
-          <div class="preview-container">
-            <div class="dropzone" onclick="document.getElementById('img-file-input').click()">
-              <input type="file" id="img-file-input" style="display:none" accept="image/*" onchange="uploadImage(event)">
-              <div style="font-size: 1.5rem; margin-bottom: 0.25rem;">📤</div>
-              <div style="font-size: 0.85rem; font-weight: 600;">Click or Drop Image Here to Preview</div>
-              <div style="font-size: 0.75rem; color: var(--text-muted);">If image looks good, proceed to Step 2!</div>
-            </div>
-            <div class="img-preview-box" id="preview-box">
-              <span style="font-size: 0.75rem; color: var(--text-muted); text-align: center; padding: 0.5rem;">No Image Loaded</span>
-            </div>
-          </div>
-        </div>
+        <p class="prompt-hint">
+          منظور شدہ تصویر کو فلو میں <strong>First Frame (Keyframe)</strong> لگائیں اور یہ موشن پرامپٹ لگا کر 10 سیکنڈ ویڈیو اور اردو ڈائیلاگ جنریٹ کریں۔
+        </p>
+        <textarea id="prompt-video" class="prompt-textarea" placeholder="Step 2 Video Animation Prompt..."></textarea>
+        <button class="btn btn-purple" onclick="copyText('prompt-video')">
+          📋 Copy Video Animation Prompt
+        </button>
       </div>
 
-      <!-- VIEW 2: Video Motion / Lip-Sync Prompt (I2V) -->
-      <div id="view-step2" style="display: none;">
-        <div class="step-banner step2">
-          <span>🎬</span> <strong>دوسرا مرحلہ:</strong> اب فلو میں وہی منظور شدہ تصویر بطور <strong>Starting Frame (Keyframe)</strong> لگائیں اور نیچے دیا گیا موشن پرامپٹ پیسٹ کریں!
-        </div>
-        <textarea id="prompt-i2v" class="prompt-box" placeholder="Step 2 Image-to-Video Animation Prompt..."></textarea>
-        <div style="display: flex; gap: 0.75rem;">
-          <button class="btn btn-purple" onclick="copyText('prompt-i2v')">📋 Copy I2V Animation Prompt</button>
-        </div>
-      </div>
+    </div>
 
-      <!-- VIEW 3: Direct Video Prompt (T2V) -->
-      <div id="view-step3" style="display: none;">
-        <div class="step-banner" style="background: rgba(0, 210, 255, 0.1); border-color: rgba(0, 210, 255, 0.3); color: var(--accent-blue);">
-          <span>⚡</span> <strong>ڈائریکٹ موڈ:</strong> تصویر چیک کیے بغیر سیدھی 10 سیکنڈ ویڈیو بنانے کا مکمل پرامپٹ۔
+    <!-- DIRECT 1-STEP VIDEO OPTION (COLLAPSIBLE / OPTIONAL) -->
+    <div class="card" style="padding: 1rem 1.25rem;">
+      <details>
+        <summary style="font-weight: 600; cursor: pointer; color: var(--accent-blue);">
+          ⚡ Optional: Direct 1-Step Video Prompt (اگر آپ تصویر بنائے بغیر سیدھی 10 سیکنڈ ویڈیو بنانا چاہیں)
+        </summary>
+        <div style="margin-top: 0.75rem;">
+          <textarea id="prompt-direct" class="prompt-textarea" style="height: 140px; margin-bottom: 0.5rem;" placeholder="Direct video prompt..."></textarea>
+          <button class="btn" onclick="copyText('prompt-direct')">
+            📋 Copy Direct Video Prompt
+          </button>
         </div>
-        <textarea id="prompt-video" class="prompt-box" placeholder="Direct All-In-One Video Prompt..."></textarea>
-        <div style="display: flex; gap: 0.75rem;">
-          <button class="btn" onclick="copyText('prompt-video')">📋 Copy Direct Video Prompt</button>
-        </div>
-      </div>
-
-      <!-- RECENT DOWNLOADS SCANNER -->
-      <div class="preview-section" style="margin-top: 1.25rem;">
-        <div style="display: flex; justify-content: space-between; align-items: center;">
-          <div style="font-size: 0.85rem; font-weight: 600; color: var(--text-muted);">📂 Recent Downloads (Flow Outputs):</div>
-          <button class="btn" style="padding: 0.25rem 0.75rem; font-size: 0.75rem;" onclick="loadRecentDownloads()">🔄 Refresh</button>
-        </div>
-        <div class="dl-list" id="dl-list-container">
-          <span style="font-size: 0.75rem; color: var(--text-muted);">Loading recent files...</span>
-        </div>
-      </div>
-
+      </details>
     </div>
 
   </div>
@@ -451,128 +402,76 @@
   <div id="toast" class="notification">✅ Prompt Copied to Clipboard!</div>
 
   <script>
-    let currentJokes = [];
-    let activeJokePkg = null;
-
-    async function loadJokes() {
-      try {
-        // Cache-busting timestamp
-        const res = await fetch('/api/jokes?_t=' + Date.now());
-        currentJokes = await res.json();
-        const container = document.getElementById('jokes-container');
-        container.innerHTML = '';
-
-        currentJokes.forEach((joke, idx) => {
-          const div = document.createElement('div');
-          div.className = 'joke-item';
-          div.id = 'joke-' + joke.id;
-          div.innerHTML = `
-            <div>
-              <div class="joke-title-urdu">${joke.title}</div>
-              <div class="joke-sub">📍 ${joke.location} • 🎒 ${joke.prop}</div>
-            </div>
-            <span style="font-size: 1.1rem;">➡️</span>
-          `;
-          div.onclick = () => selectJoke(joke.id);
-          container.appendChild(div);
-        });
-
-        if (currentJokes.length > 0) {
-          selectJoke(currentJokes[0].id);
-        }
-      } catch (err) {
-        console.error('Failed to load jokes', err);
+    async function loadJokeById(jokeId, el) {
+      if (el) {
+        document.querySelectorAll('.quick-pill').forEach(p => p.classList.remove('active'));
+        el.classList.add('active');
       }
-    }
-
-    async function selectJoke(jokeId) {
-      document.querySelectorAll('.joke-item').forEach(el => el.classList.remove('active'));
-      const activeEl = document.getElementById('joke-' + jokeId);
-      if (activeEl) activeEl.classList.add('active');
 
       try {
         const res = await fetch('/api/joke-prompt/' + jokeId + '?_t=' + Date.now());
-        activeJokePkg = await res.json();
-        
-        document.getElementById('current-joke-title').innerText = "⚡ " + activeJokePkg.joke.title;
-        document.getElementById('prompt-image').value = activeJokePkg.image_prompt || '';
-        document.getElementById('prompt-i2v').value = activeJokePkg.i2v_prompt || '';
-        document.getElementById('prompt-video').value = activeJokePkg.video_prompt || '';
+        const data = await res.json();
+        renderPromptPackage(data);
       } catch (err) {
-        console.error('Error fetching prompt', err);
+        console.error('Error fetching joke', err);
       }
     }
 
-    function switchTab(tabId) {
-      ['step1', 'step2', 'step3'].forEach(t => {
-        document.getElementById('tab-' + t).classList.remove('active');
-        document.getElementById('view-' + t).style.display = 'none';
-      });
-      document.getElementById('tab-' + tabId).classList.add('active');
-      document.getElementById('view-' + tabId).style.display = 'block';
+    async function handleSmartParse() {
+      const text = document.getElementById('smart-raw-input').value.trim();
+      if (!text) {
+        alert('براہ کرم پہلے کوئی لطیفہ یا اسکرپٹ یہاں پیسٹ کریں۔');
+        return;
+      }
+
+      const btn = document.getElementById('btn-parse');
+      btn.innerText = '⏳ AI Fixing Grammar & Generating Prompts...';
+      btn.disabled = true;
+
+      try {
+        const res = await fetch('/api/smart-parse?_t=' + Date.now(), {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ raw_text: text })
+        });
+        const data = await res.json();
+        renderPromptPackage(data);
+        showToast('✅ AI نے اسکرپٹ درست کر کے دونوں پرامپٹس تیار کر دیے ہیں!');
+      } catch (err) {
+        alert('Error parsing script: ' + err);
+      } finally {
+        btn.innerText = '✨ Magic Auto-Convert to Image & Video Prompts';
+        btn.disabled = false;
+      }
+    }
+
+    function renderPromptPackage(data) {
+      document.getElementById('active-title').innerText = data.title || 'Dost Comedy Episode';
+      document.getElementById('active-meta').innerText = '📍 ' + (data.location || '') + ' • 🎒 ' + (data.prop || '');
+      
+      document.getElementById('prompt-image').value = data.image_prompt || '';
+      document.getElementById('prompt-video').value = data.i2v_prompt || '';
+      document.getElementById('prompt-direct').value = data.video_prompt || '';
     }
 
     function copyText(elementId) {
       const textarea = document.getElementById(elementId);
       textarea.select();
       navigator.clipboard.writeText(textarea.value);
-      showToast();
+      showToast('✅ Prompt Copied to Clipboard! Paste in Google Flow!');
     }
 
-    function showToast() {
+    function showToast(msg) {
       const toast = document.getElementById('toast');
+      if (msg) toast.innerText = msg;
       toast.style.display = 'block';
       setTimeout(() => {
         toast.style.display = 'none';
       }, 3000);
     }
 
-    async function uploadImage(e) {
-      const file = e.target.files[0];
-      if (!file) return;
-
-      const formData = new FormData();
-      formData.append('file', file);
-
-      try {
-        const res = await fetch('/api/upload-preview-image', {
-          method: 'POST',
-          body: formData
-        });
-        const data = await res.json();
-        if (data.url) {
-          document.getElementById('preview-box').innerHTML = `<img src="${data.url}?_t=${Date.now()}" alt="Preview">`;
-        }
-      } catch (err) {
-        console.error('Failed to upload preview image', err);
-      }
-    }
-
-    async function loadRecentDownloads() {
-      try {
-        const res = await fetch('/api/recent-downloads?_t=' + Date.now());
-        const files = await res.json();
-        const container = document.getElementById('dl-list-container');
-        if (files.length === 0) {
-          container.innerHTML = '<span style="font-size: 0.75rem; color: var(--text-muted);">No recent files found.</span>';
-          return;
-        }
-        container.innerHTML = '';
-        files.slice(0, 10).forEach(f => {
-          const div = document.createElement('div');
-          div.className = 'dl-item';
-          const icon = f.is_image ? '🖼️' : '🎥';
-          div.innerHTML = `${icon} ${f.name} (${f.size_mb} MB)`;
-          div.title = f.path;
-          container.appendChild(div);
-        });
-      } catch (err) {
-        console.error('Failed to load recent downloads', err);
-      }
-    }
-
-    loadJokes();
-    loadRecentDownloads();
+    // Load initial joke on startup
+    loadJokeById('joke_1_bike');
   </script>
 </body>
 </html>

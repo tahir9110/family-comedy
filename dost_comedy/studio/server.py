@@ -16,14 +16,10 @@ sys.path.insert(0, str(BASE_DIR / "scripts"))
 
 from scripts.pipeline_helper import extract_last_frame, stitch_and_polish
 from studio.generator import (
-    get_next_episode_id,
     load_ideas,
     get_joke_by_id,
-    generate_prompt_for_joke,
     generate_prompts_package,
-    build_flow_prompt,
-    build_image_prompt,
-    build_i2v_prompt,
+    smart_parse_raw_text,
     CHARACTERS,
     HISTORY_LEDGER_PATH
 )
@@ -51,14 +47,8 @@ app.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="static")
 app.mount("/temp", StaticFiles(directory=str(TEMP_DIR)), name="temp")
 app.mount("/output", StaticFiles(directory=str(OUTPUT_DIR)), name="output")
 
-class CustomJokeRequest(BaseModel):
-    title: str
-    location: str
-    prop: str
-    speaker_00: str
-    dialogue_00: str
-    speaker_03: str
-    dialogue_03: str
+class SmartParseRequest(BaseModel):
+    raw_text: str
 
 @app.get("/")
 def read_root():
@@ -77,21 +67,21 @@ def get_jokes():
 def get_characters():
     return JSONResponse(CHARACTERS)
 
-@app.post("/api/generate-prompt")
-def generate_prompt_endpoint(req: CustomJokeRequest):
-    img_p = build_image_prompt(req.speaker_00, req.speaker_03, req.location, req.prop)
-    i2v_p = build_i2v_prompt(req.speaker_00, req.dialogue_00, req.speaker_03, req.dialogue_03)
-    vid_p = build_flow_prompt(
-        req.speaker_00, req.dialogue_00,
-        req.speaker_03, req.dialogue_03,
-        req.location, req.prop
-    )
+@app.post("/api/smart-parse")
+def smart_parse_endpoint(req: SmartParseRequest):
+    if not req.raw_text.strip():
+        raise HTTPException(status_code=400, detail="Empty script text")
+    pkg = smart_parse_raw_text(req.raw_text)
     return JSONResponse({
         "status": "success",
-        "title": req.title,
-        "image_prompt": img_p,
-        "i2v_prompt": i2v_p,
-        "video_prompt": vid_p
+        "title": pkg["title"],
+        "location": pkg["location"],
+        "prop": pkg["prop"],
+        "image_prompt": pkg["image_prompt"],
+        "i2v_prompt": pkg["i2v_prompt"],
+        "video_prompt": pkg["video_prompt"],
+        "dialogue_00": pkg["dialogue_00"],
+        "dialogue_03": pkg["dialogue_03"]
     })
 
 @app.get("/api/joke-prompt/{joke_id}")
@@ -103,9 +93,14 @@ def get_prompt_for_preloaded_joke(joke_id: str):
     return JSONResponse({
         "status": "success",
         "joke": joke,
+        "title": pkg["title"],
+        "location": pkg["location"],
+        "prop": pkg["prop"],
         "image_prompt": pkg["image_prompt"],
         "i2v_prompt": pkg["i2v_prompt"],
-        "video_prompt": pkg["video_prompt"]
+        "video_prompt": pkg["video_prompt"],
+        "dialogue_00": pkg["dialogue_00"],
+        "dialogue_03": pkg["dialogue_03"]
     })
 
 @app.post("/api/upload-preview-image")
@@ -160,4 +155,4 @@ if __name__ == "__main__":
     print("       STARTING DOST COMEDY STUDIO (AQIB & MANI)")
     print("========================================================")
     print("URL: http://localhost:8060 (No-Cache Mode Active)\n")
-    uvicorn.run(app, host="127.0.0.1", port=8060)
+    uvicorn.run("studio.server:app", host="127.0.0.1", port=8060, reload=True)
