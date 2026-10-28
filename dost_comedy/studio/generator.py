@@ -191,16 +191,18 @@ def map_tag(spk):
         return "@Mani"
     return f"@{spk.replace('@', '').strip().capitalize()}"
 
-def build_image_prompt(speaker_00, speaker_03, location, prop, staging=None):
+def build_image_prompt(speaker_00, speaker_03, location, prop, staging=None, custom_desc=None):
     """Step 1: Keyframe Image Prompt (Generate still image in Flow first to verify face, setting, and staging)."""
     s1_tag = map_tag(speaker_00)
     s2_tag = map_tag(speaker_03)
 
-    desc1 = get_character_desc(s1_tag)
-    desc2 = get_character_desc(s2_tag)
+    desc1 = (custom_desc and custom_desc.get(s1_tag)) or get_character_desc(s1_tag)
+    desc2 = (custom_desc and custom_desc.get(s2_tag)) or get_character_desc(s2_tag)
 
     if not staging:
         staging = infer_staging(location, prop, s1_tag, s2_tag)
+    elif not staging.strip().lower().startswith("physical staging:"):
+        staging = f"Physical Staging: {staging.strip()}"
 
     loc_str = location if location.lower().startswith("pakistani") else f"Pakistani {location}"
 
@@ -226,15 +228,17 @@ def build_i2v_prompt(speaker_00, dialogue_00, speaker_03, dialogue_03):
         f"Continuous 10-second single take, photorealistic smooth motion."
     )
 
-def build_flow_prompt(speaker_00, dialogue_00, speaker_03, dialogue_03, location, prop, staging=None):
+def build_flow_prompt(speaker_00, dialogue_00, speaker_03, dialogue_03, location, prop, staging=None, custom_desc=None):
     """Direct All-In-One Text-to-Video Prompt."""
     s1_tag = map_tag(speaker_00)
     s2_tag = map_tag(speaker_03)
-    desc1 = get_character_desc(s1_tag)
-    desc2 = get_character_desc(s2_tag)
+    desc1 = (custom_desc and custom_desc.get(s1_tag)) or get_character_desc(s1_tag)
+    desc2 = (custom_desc and custom_desc.get(s2_tag)) or get_character_desc(s2_tag)
 
     if not staging:
         staging = infer_staging(location, prop, s1_tag, s2_tag)
+    elif not staging.strip().lower().startswith("physical staging:"):
+        staging = f"Physical Staging: {staging.strip()}"
 
     loc_str = location if location.lower().startswith("pakistani") else f"Pakistani {location}"
 
@@ -248,7 +252,7 @@ def build_flow_prompt(speaker_00, dialogue_00, speaker_03, dialogue_03, location
         f"Strictly continuous 10-second single take."
     )
 
-def generate_prompts_package(joke_dict):
+def generate_prompts_package(joke_dict, custom_desc=None):
     sc1 = joke_dict.get("scene_1", {})
     spk1 = sc1.get("speaker_at_00", "Mani")
     dia1 = clean_devanagari(sc1.get("dialogue_at_00", ""))
@@ -266,43 +270,60 @@ def generate_prompts_package(joke_dict):
         "dialogue_00": dia1,
         "speaker_03": spk2,
         "dialogue_03": dia2,
-        "image_prompt": build_image_prompt(spk1, spk2, loc, prp, staging),
+        "staging": staging,
+        "image_prompt": build_image_prompt(spk1, spk2, loc, prp, staging, custom_desc),
         "i2v_prompt": build_i2v_prompt(spk1, dia1, spk2, dia2),
-        "video_prompt": build_flow_prompt(spk1, dia1, spk2, dia2, loc, prp, staging)
+        "video_prompt": build_flow_prompt(spk1, dia1, spk2, dia2, loc, prp, staging, custom_desc)
     }
 
 def smart_parse_raw_text(raw_text):
-    """Parses any raw joke, fixes grammar, expands short lines, and generates the complete prompt package."""
+    """Parses any raw joke, fixes grammar, expands short lines, and generates the complete prompt package.
+    Lets AI (OpenAI/Gemini) intelligently determine the ideal Pakistani venue, authentic props, character roles, and custom physical staging.
+    """
     clean = raw_text.strip()
     
     # Try AI parse first
-    prompt = f"""You are an expert Pakistani comedy dialogue supervisor.
-The user provided a raw joke or comedy dialogue.
-The main character who delivers the witty comedic punchline is always @Aqib (Pakistani young man, brother Aqib).
-The second character can be:
-- @Mani (if it is a casual buddy comedy joke between two friends)
-- @Judge (if the joke is in a courtroom, trial, or sentencing scenario with a judge)
-- @Doctor (if the joke is in a medical clinic or hospital)
-- @Police (if the joke is with a police officer or thana)
-- @Teacher (if the joke is in a school or classroom)
+    prompt = f"""You are an elite Pakistani comedy script supervisor and cinematic director for AI video production (Google Flow).
+Analyze the user's raw joke or comedy dialogue and intelligently determine the ideal Pakistani venue, authentic props, character roles, and physical staging.
 
-STRICT RULES:
-1. Preserve 100% of user's core comedic premise and joke.
-2. Short-Line Expansion: If any line is 1-2 words (like "Kyun?", "Kya?", "Achha?"), expand it to 4-5 words (e.g. "ارے پر کیوں جناب؟ مجھے وجہ تو بتائیں!").
-3. Fix grammar and typos. Use pure Urdu script with clean Roman Urdu in parentheses: 'اردو مکالمہ (Clean Roman Urdu)'.
-4. Detect suitable Pakistani location and props:
-   - For court/judge jokes: location="Pakistani High Court courtroom", prop="Elevated mahogany judicial bench, wooden gavel, and wooden accused dock (kathehra)". NEVER suggest outdoor hanging scaffolds or ropes.
-   - For hospital/doctor jokes: location="Pakistani clinic consultation room", prop="Doctor consultation desk and stethoscope".
-   - For police jokes: location="Pakistani police station (thana)", prop="Official wooden desk and case files".
-   - For friend jokes: location="Streetside curb near a parked Honda CD70 motorbike" or "Roadside Chai Dhaba", prop="Honda CD70 motorbike" or "Chai glasses".
-5. Return ONLY valid JSON in this exact structure:
+CORE PRINCIPLES (LET THE SCRIPT DICTATE THE SCENE):
+1. VENUE & LOCATION:
+   - Autonomously choose the most authentic, funny, and contextually accurate Pakistani venue that fits the joke premise.
+   - Examples: High Court Courtroom, Men's Barber Shop (Nai ki dukan), Roadside Chai Dhaba, Motor Mechanic Workshop, Doctor Clinic, Police Station (Thana), Sweet Shop (Mithai ki dukan), Vegetable/Fruit Stall, Bachelor Living Room, Roadside CD70 Motorbike curb, etc.
+   - NEVER use generic or mismatched venues. If the script is a court joke, place it in a Pakistani High Court courtroom. If about a barber, in a barber shop. If about two buddies, at a dhaba or on a CD70 motorbike.
+
+2. PROPS:
+   - Identify 2-3 authentic, realistic props that belong in this venue (e.g. mahogany judge bench and gavel; barber mirror, cape, and scissors; steaming tea glasses and rustic wooden bench; spanners and greasy motorcycle parts).
+   - NEVER suggest violent, gory, or execution props (Strictly NO hanging scaffolds, NO ropes).
+
+3. CHARACTERS & CASTING:
+   - The witty comedic punchline hero is ALWAYS @Aqib (Pakistani young man, brother Aqib).
+   - The other character should naturally fit the joke (e.g. @Mani for buddy jokes, @Judge for court trials, @Doctor for clinics, @Police for police/thana, @Barber for salon, @Shopkeeper for bazaar, @Teacher for classroom, etc.).
+   - If the character is not @Aqib or @Mani, provide a concise visual description in 'character_00_desc' (age, clothing, hair, role).
+
+4. PHYSICAL STAGING (CRITICAL FOR GOOGLE FLOW VIDEO):
+   - You MUST write the 'staging' description following these strict cinematographic rules:
+     * Side-profile two-shot in open 3/4 angle: Both characters stand or sit angled toward the camera lens in an open 3/4 stance, so BOTH characters' full faces, eyes, and mouth expressions are clearly visible to the camera at the same time.
+     * NEITHER character turns their back to the camera.
+     * Describe natural interaction: sitting postures, hands resting, expressive gestures, playful comedic banter.
+     * Strictly NO aggressive face-off, NO confrontational fighting stance.
+
+5. DIALOGUE & TIMING:
+   - Short-Line Safety Expansion: If any dialogue is 1-2 words (like "Kyun?", "Kya?"), expand it to 4-5 words (e.g. "ارے پر کیوں جناب؟ مجھے وجہ تو بتائیں!").
+   - Fix grammar and typos. Format: 'اردو مکالمہ (Clean Roman Urdu)'.
+   - speaker_00 speaks at 00-03 seconds (sets up the premise).
+   - speaker_03 delivers the comedic punchline at 03-08 seconds.
+
+Return ONLY valid JSON in this exact schema:
 {{
   "title": "Punchy Urdu/English Title",
-  "location": "Pakistani High Court courtroom",
-  "prop": "Elevated mahogany judicial bench, wooden gavel, and wooden accused dock",
-  "speaker_00": "Judge",
+  "location": "Authentic Pakistani Venue",
+  "prop": "Authentic props visible in the scene",
+  "speaker_00": "Name or tag (e.g., Mani, Judge, Doctor, Barber, Police)",
+  "character_00_desc": "Visual appearance description if not @Aqib or @Mani (e.g., 'Keep facial features consistent with @Judge. 55-year-old Pakistani judge in black judicial coat and white neckband.')",
   "dialogue_00": "اردو مکالمہ (Clean Roman Urdu)",
   "speaker_03": "Aqib",
+  "staging": "Physical Staging: In the authentic venue, character_00 sits/stands... while @Aqib stands/sits in an open 3/4 angle facing the camera and character... both faces fully visible...",
   "dialogue_03": "اردو مکالمہ (Clean Roman Urdu)"
 }}"""
 
@@ -314,7 +335,7 @@ STRICT RULES:
         payload = {
             "model": "gpt-4o",
             "messages": [
-                {"role": "system", "content": "You are a Pakistani comedy script supervisor. Return only clean JSON."},
+                {"role": "system", "content": "You are an expert Pakistani comedy script supervisor and director. Return only clean JSON."},
                 {"role": "user", "content": f"{prompt}\n\nRAW USER SCRIPT:\n{clean}"}
             ],
             "response_format": {"type": "json_object"}
@@ -363,6 +384,7 @@ STRICT RULES:
         "title": ai_result.get("title", "دوست کامیڈی"),
         "location": ai_result.get("location", "Roadside Chai Dhaba"),
         "prop": ai_result.get("prop", "Tea glasses"),
+        "staging": ai_result.get("staging"),
         "scene_1": {
             "speaker_at_00": ai_result.get("speaker_00", "Mani"),
             "dialogue_at_00": ai_result.get("dialogue_00", ""),
@@ -370,4 +392,10 @@ STRICT RULES:
             "dialogue_at_03": ai_result.get("dialogue_03", "")
         }
     }
-    return generate_prompts_package(joke_dict)
+
+    custom_desc = {}
+    s1_tag = map_tag(ai_result.get("speaker_00", "Mani"))
+    if ai_result.get("character_00_desc"):
+        custom_desc[s1_tag] = ai_result["character_00_desc"].strip()
+
+    return generate_prompts_package(joke_dict, custom_desc=custom_desc)
