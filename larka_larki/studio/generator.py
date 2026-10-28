@@ -220,39 +220,71 @@ def format_multi_scene_prompts(data, wardrobe=None):
                 dialogue_script += f'{desc} ({sl["name"]}): "{sl["line"]}"\n'
 
         if num == 1:
-            # Scene 1: Initial Text-to-Video with Character references
             prop_desc = f" with {prop.lower()} featured between them" if prop else ""
+
+            # Step 1: Keyframe Image Prompt (T2I)
+            image_prompt = (
+                f"Cinematic keyframe production still photograph. "
+                f"Keep their facial features consistent with the attached @Larka and @Larki character references. "
+                f"@Larka wears {wardrobe['larka']}, @Larki wears {wardrobe['larki']}. "
+                f"Pakistani {location.lower()} setting{prop_desc}. "
+                f"Interior decor constraint: Plain clean walls with modern simple abstract art or landscape painting only. Absolutely NO Arabic script, NO calligraphy wall frames, NO religious verses, and NO text on walls or banners. "
+                f"Camera & Optics: Shot on 50mm prime cinematic lens with natural shallow depth of field, softly blurred background. Fixed eye-level medium-wide shot with smooth stable framing, no jittery camera motion, no cuts, no reverse angles. "
+                f"Open 3/4 Camera Staging with realistic depth: Both characters are angled toward the camera lens in an open 3/4 stance with natural realistic spatial distance, so BOTH characters' full faces, eyes, and mouth expressions are clearly visible simultaneously. "
+                f"@Larka stands or sits on screen-LEFT angled in a three-quarter stance toward the camera, and @Larki stands or sits on screen-RIGHT angled in a three-quarter stance toward the camera. "
+                f"NEITHER character has their back turned to the camera. Spacious natural staging with proper environmental depth, strictly NO cramped side-by-side squishing. "
+                f"Lighting & Atmosphere: Soft natural directional lighting with gentle ambient shadows, warm cinematic color grade. "
+                f"Negative Constraints: Completely clean plain walls with NO Arabic script, NO framed calligraphy, NO religious verses. Strictly NO text on clothing, NO extra fingers, NO blurry facial artifacts. "
+                f"Single still frame keyframe photograph, razor sharp facial focus, natural eyes looking toward scene, perfectly positioned for subsequent video animation. Ultra photorealistic 8k aesthetic, 9:16 vertical video composition."
+            )
+
+            # Step 2: Video Motion / Lip-Sync Prompt (I2V)
+            i2v_prompt = (
+                f"Animate seamlessly from this exact starting keyframe image, strictly maintaining identical character faces, clothing, environment, and lighting. "
+                f"Fixed medium-wide stationary eye-level camera, no cuts, no panning, no camera motion. "
+                f"{dialogue_script}"
+                f"Characters look at each other with expressive comedic timing and natural mouth articulation, never directly into the camera lens. No unscripted dialogue. Continuous 10-second single take, photorealistic smooth motion."
+            )
+
+            # Direct Text-to-Video
             prompt_text = (
                 f"Keep their facial features consistent with the attached @Larka and @Larki character references. "
                 f"@Larka wears {wardrobe['larka']}, @Larki wears {wardrobe['larki']}. "
                 f"Pakistani {location.lower()} setting{prop_desc}. "
                 f"Interior decor constraint: Plain clean walls with modern simple abstract art or landscape painting only. Absolutely NO Arabic script, NO calligraphy wall frames, NO religious verses, and NO text on walls or banners. "
-                f"Side-profile two-shot in 3/4 angle: The camera captures both characters from an angled profile perspective so BOTH characters' full faces, eyes, and mouth expressions are clearly visible to the camera simultaneously. "
-                f"@Larka stands on screen-LEFT angled in a three-quarter stance toward the camera, and @Larki stands on screen-RIGHT angled in a three-quarter stance toward the camera. "
-                f"NEITHER character has their back turned to the camera. Both faces are in clear view throughout the entire scene as they speak to each other. DO NOT swap their positions. "
+                f"Camera & Optics: Shot on 50mm prime cinematic lens with subtle shallow depth of field, softly blurred background. Fixed eye-level medium-wide shot with smooth stable framing, no jittery camera motion, no cuts, no reverse angles. "
+                f"Open 3/4 Camera Staging with realistic depth: Both characters are angled toward the camera lens in an open 3/4 stance with natural realistic spatial distance, so BOTH characters' full faces, eyes, and mouth expressions are clearly visible simultaneously. "
+                f"@Larka stands or sits on screen-LEFT angled in a three-quarter stance toward the camera, and @Larki stands or sits on screen-RIGHT angled in a three-quarter stance toward the camera. "
+                f"NEITHER character has their back turned to the camera. Spacious natural staging with proper environmental depth, strictly NO cramped side-by-side squishing. DO NOT swap their positions. "
                 f"Fixed medium-wide camera shot, stationary camera, no cuts, no close-ups, no reverse angles. "
                 f"{dialogue_script}"
-                f"Characters look at each other with expressive comedic timing, never directly into the camera lens. No unscripted dialogue."
+                f"Characters look at each other with expressive comedic timing, never directly into the camera lens. No unscripted dialogue. Ultra photorealistic 8k cinematic aesthetic, 9:16 vertical video composition."
             )
         else:
             # Scene 2, 3, 4, 5... (Image-to-Video Continuation with ZERO @ tags!)
-            prompt_text = (
+            image_prompt = ""
+            i2v_prompt = (
                 f"Continue seamlessly from this exact starting frame, same faces, outfits, lighting. "
                 f"Same positions: young man on screen-LEFT, young woman on screen-RIGHT. Do not swap. "
                 f"Fixed medium-wide camera, no cuts, no zooms. "
                 f"{dialogue_script}"
                 f"Characters look at each other, never at camera. No unscripted dialogue."
             )
+            prompt_text = i2v_prompt
 
         formatted_scenes.append({
             "scene_num": num,
             "title": f"Scene {num} Prompt ({'Initial T2V with @Tags' if num == 1 else f'Part {num} Continuation • ZERO @Tags'})",
             "prompt": prompt_text,
+            "image_prompt": image_prompt,
+            "i2v_prompt": i2v_prompt,
             "dialogues": dialogues
         })
 
     s1_prompt = formatted_scenes[0]["prompt"] if formatted_scenes else ""
     s2_prompt = formatted_scenes[1]["prompt"] if len(formatted_scenes) > 1 else s1_prompt
+    img_prompt = formatted_scenes[0].get("image_prompt", "") if formatted_scenes else ""
+    i2v_p = formatted_scenes[0].get("i2v_prompt", "") if formatted_scenes else ""
 
     return {
         "title": title,
@@ -261,6 +293,9 @@ def format_multi_scene_prompts(data, wardrobe=None):
         "wardrobe": wardrobe,
         "total_scenes": len(formatted_scenes),
         "scenes": formatted_scenes,
+        "image_prompt": img_prompt,
+        "i2v_prompt": i2v_p,
+        "video_prompt": s1_prompt,
         "scene1_prompt": s1_prompt,
         "scene2_prompt": s2_prompt
     }

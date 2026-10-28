@@ -208,21 +208,66 @@ function renderDynamicSceneCards(scenes) {
   container.innerHTML = "";
 
   scenes.forEach(sc => {
-    const isT2V = sc.scene_num === 1;
-    const card = document.createElement("div");
-    card.className = "prompt-output-box mt-3";
-    card.id = `prompt-card-scene-${sc.scene_num}`;
+    if (sc.scene_num === 1 && (sc.image_prompt || sc.i2v_prompt)) {
+      // Professional Dual 2-Step Workflow (Image first, then Video Motion)
+      const dualBox = document.createElement("div");
+      dualBox.className = "mt-3";
+      dualBox.innerHTML = `
+        <div class="prompt-output-box mb-3" style="border-left: 4px solid #10b981; background: rgba(16, 185, 129, 0.05);">
+          <div class="prompt-header">
+            <span class="prompt-title text-emerald" style="font-weight: 700;">📸 PROMPT 1: Keyframe Image Prompt (T2I)</span>
+            <button class="btn btn-sm btn-accent" onclick="copyCustomText('prompt-text-scene-1-img')">📋 Copy Image Prompt</button>
+          </div>
+          <textarea id="prompt-text-scene-1-img" class="studio-textarea" readonly rows="4">${sc.image_prompt || sc.prompt}</textarea>
+          <div class="prompt-hint">💡 In Flow: Generate STILL image first to verify faces, living room, and staging.</div>
+        </div>
 
-    card.innerHTML = `
-      <div class="prompt-header">
-        <span class="prompt-title">🎬 Scene ${sc.scene_num} Prompt (${isT2V ? 'Initial T2V with @Tags' : `Part ${sc.scene_num} Continuation • ZERO @Tags`})</span>
-        <button class="btn btn-sm btn-accent" onclick="copyScenePrompt(${sc.scene_num})">📋 Copy Scene ${sc.scene_num} Prompt</button>
-      </div>
-      <textarea id="prompt-text-scene-${sc.scene_num}" class="studio-textarea" readonly rows="5">${sc.prompt}</textarea>
-      <div class="prompt-hint">${isT2V ? '💡 In Flow: Attach character references (@Abbu, @Ammi, @Beta). Generate Clip 1.' : `💡 In Flow: Upload Clip ${sc.scene_num - 1}'s extracted last frame, paste this prompt, and hit Enter.`}</div>
-    `;
+        <div class="prompt-output-box mb-3" style="border-left: 4px solid #3b82f6; background: rgba(59, 130, 246, 0.05);">
+          <div class="prompt-header">
+            <span class="prompt-title text-blue" style="font-weight: 700;">🎬 PROMPT 2: Video Motion / Lip-Sync Prompt (I2V)</span>
+            <button class="btn btn-sm btn-accent" onclick="copyCustomText('prompt-text-scene-1-i2v')">📋 Copy Video Motion Prompt</button>
+          </div>
+          <textarea id="prompt-text-scene-1-i2v" class="studio-textarea" readonly rows="4">${sc.i2v_prompt || sc.prompt}</textarea>
+          <div class="prompt-hint">💡 In Flow: Upload the approved keyframe image, paste this prompt to animate lips and movements.</div>
+        </div>
 
-    container.appendChild(card);
+        <div class="prompt-output-box" style="border-left: 4px solid #f59e0b; opacity: 0.9;">
+          <div class="prompt-header">
+            <span class="prompt-title text-amber" style="font-weight: 600;">⚡ Direct Video Prompt (T2V Optional)</span>
+            <button class="btn btn-sm btn-secondary" onclick="copyCustomText('prompt-text-scene-1-t2v')">📋 Copy Direct Video Prompt</button>
+          </div>
+          <textarea id="prompt-text-scene-1-t2v" class="studio-textarea" readonly rows="3">${sc.prompt}</textarea>
+          <div class="prompt-hint">💡 In Flow: Direct text-to-video prompt if generating video in one shot.</div>
+        </div>
+      `;
+      container.appendChild(dualBox);
+    } else {
+      const card = document.createElement("div");
+      card.className = "prompt-output-box mt-3";
+      card.id = `prompt-card-scene-${sc.scene_num}`;
+
+      card.innerHTML = `
+        <div class="prompt-header">
+          <span class="prompt-title">🎬 Scene ${sc.scene_num} Prompt (Part ${sc.scene_num} Continuation • ZERO @Tags)</span>
+          <button class="btn btn-sm btn-accent" onclick="copyScenePrompt(${sc.scene_num})">📋 Copy Scene ${sc.scene_num} Prompt</button>
+        </div>
+        <textarea id="prompt-text-scene-${sc.scene_num}" class="studio-textarea" readonly rows="4">${sc.prompt}</textarea>
+        <div class="prompt-hint">💡 In Flow: Upload Clip ${sc.scene_num - 1}'s extracted last frame, paste this prompt, and hit Enter.</div>
+      `;
+      container.appendChild(card);
+    }
+  });
+}
+
+function copyCustomText(textareaId) {
+  const el = document.getElementById(textareaId);
+  if (!el) return;
+  navigator.clipboard.writeText(el.value).then(() => {
+    alert("Copied to clipboard!");
+  }).catch(() => {
+    el.select();
+    document.execCommand("copy");
+    alert("Copied to clipboard!");
   });
 }
 

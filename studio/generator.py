@@ -384,12 +384,35 @@ def format_family_multi_scene_prompts(data, wardrobe=None):
             else:
                 setting_prefix = f"Pakistani house {location.lower()} setting"
 
+            # Generate Step 1: Keyframe Image Prompt (T2I)
+            image_prompt = (
+                f"Cinematic keyframe production still photograph. "
+                f"Keep their facial features consistent with the attached {chars_present}. "
+                f"{wardrobe_desc}. "
+                f"{setting_prefix}{prop_desc}. "
+                f"{pos_desc}. "
+                f"Camera & Optics: Shot on 50mm prime cinematic lens with natural shallow depth of field, softly blurred background. Fixed eye-level medium-wide shot with smooth stable framing, no jittery camera motion, no cuts, no reverse angles. "
+                f"Open 3/4 Camera Staging with realistic depth: Characters are angled toward the camera lens in an open 3/4 stance with natural realistic spatial distance, so ALL characters' full faces, eyes, and mouth expressions are clearly visible simultaneously. NEITHER character turns their back to the camera. Spacious natural staging with proper environmental depth, strictly NO cramped side-by-side squishing. "
+                f"Lighting & Atmosphere: Soft natural directional indoor lighting with gentle ambient shadows, warm cinematic Pakistani drama aesthetic. "
+                f"Negative Constraints: Interior decor constraint: Plain clean walls with modern geometric wallpaper or simple landscape painting only. Absolutely NO Arabic script, NO calligraphy wall frames, NO religious verses, NO text on clothing or walls, NO extra fingers or distorted limbs. "
+                f"Single still frame keyframe photograph, razor sharp facial focus, natural eyes looking toward scene, perfectly positioned for subsequent video animation. Ultra photorealistic 8k cinematic sitcom aesthetic, 9:16 vertical video composition."
+            )
+
+            # Generate Step 2: Video Motion / Lip-Sync Prompt (I2V)
+            i2v_prompt = (
+                f"Animate seamlessly from this exact starting keyframe image, strictly maintaining identical character faces, clothing, environment, and lighting. "
+                f"Fixed medium-wide stationary eye-level camera, no cuts, no panning, no camera motion. "
+                f"{dialogue_script}"
+                f"Characters maintain their initial body orientation and direction throughout without turning towards the camera. Expressive comedic timing, synchronized mouth movement, and lively facial reactions. Continuous 10-second single take, photorealistic smooth motion."
+            )
+
             prompt_text = (
                 f"Keep their facial features consistent with the attached {chars_present}. "
                 f"{wardrobe_desc}. "
                 f"{setting_prefix}{prop_desc}. "
                 f"{pos_desc}. "
                 f"Camera & Optics: Shot on 50mm prime cinematic lens with natural shallow depth of field, softly blurred background. Fixed eye-level medium-wide shot with smooth stable framing, no jittery camera motion, no cuts, no reverse angles. "
+                f"Open 3/4 Camera Staging with realistic depth: Characters are angled toward the camera lens in an open 3/4 stance with natural realistic spatial distance, so ALL characters' full faces, eyes, and mouth expressions are clearly visible simultaneously. NEITHER character turns their back to the camera. Spacious natural staging with proper environmental depth, strictly NO cramped side-by-side squishing. "
                 f"Lighting & Atmosphere: Soft natural directional indoor lighting with gentle ambient shadows, warm cinematic Pakistani drama aesthetic. "
                 f"Negative Constraints: Interior decor constraint: Plain clean walls with modern geometric wallpaper or simple landscape painting only. Absolutely NO Arabic script, NO calligraphy wall frames, NO religious verses, NO text on clothing or walls, NO extra fingers or distorted limbs. "
                 f"{dialogue_script}"
@@ -418,11 +441,15 @@ def format_family_multi_scene_prompts(data, wardrobe=None):
             "scene_num": num,
             "title": f"Scene {num} Prompt ({'Initial T2V with @Tags' if num == 1 else f'Part {num} Continuation • ZERO @Tags'})",
             "prompt": prompt_text,
+            "image_prompt": image_prompt if num == 1 else "",
+            "i2v_prompt": i2v_prompt if num == 1 else prompt_text,
             "dialogues": dialogues
         })
 
     s1_prompt = formatted_scenes[0]["prompt"] if formatted_scenes else ""
     s2_prompt = formatted_scenes[1]["prompt"] if len(formatted_scenes) > 1 else s1_prompt
+    img_prompt = formatted_scenes[0].get("image_prompt", "") if formatted_scenes else ""
+    i2v_p = formatted_scenes[0].get("i2v_prompt", "") if formatted_scenes else ""
 
     return {
         "title": title,
@@ -431,6 +458,9 @@ def format_family_multi_scene_prompts(data, wardrobe=None):
         "wardrobe": wardrobe,
         "total_scenes": len(formatted_scenes),
         "scenes": formatted_scenes,
+        "image_prompt": img_prompt,
+        "i2v_prompt": i2v_p,
+        "video_prompt": s1_prompt,
         "scene1_prompt": s1_prompt,
         "scene2_prompt": s2_prompt
     }
