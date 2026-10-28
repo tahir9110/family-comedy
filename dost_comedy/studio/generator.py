@@ -61,7 +61,7 @@ CHARACTERS = {
 DEFAULT_PROMPT_CONSTRAINTS = (
     "Camera & Optics: Shot on 50mm prime cinematic lens with subtle shallow depth of field, softly blurred background. "
     "Fixed eye-level medium-wide shot with smooth stable framing, no jittery camera motion, no cuts, no reverse angles. "
-    "Side-profile two-shot in open 3/4 angle: Both characters stand or sit angled toward the camera lens in an open 3/4 stance, so BOTH characters' full faces, eyes, and mouth expressions are clearly visible to the camera at the same time. NEITHER character turns their back to the camera. "
+    "Open 3/4 Camera Staging with realistic depth: Both characters are angled toward the camera lens in an open 3/4 stance with natural realistic spatial distance, so BOTH characters' full faces, eyes, and mouth expressions are clearly visible simultaneously. NEITHER character turns their back to the camera. Spacious natural staging with proper environmental depth, strictly NO cramped side-by-side squishing. "
     "Lighting & Atmosphere: Soft natural directional lighting with gentle ambient shadows, warm cinematic color grade. "
     "Tone & Performance: Expressive comedic timing, situational Pakistani comedy. Strictly NO aggressive face-off, NO physical violence, NO confrontational fighting stance. "
     "Negative Constraints: Background walls and surroundings are completely clean and plain with NO Arabic script, NO framed calligraphy, and NO religious verses on walls. Strictly NO text on clothing, NO extra fingers, NO blurry facial artifacts. Ultra photorealistic cinematic Hollywood-level 8k aesthetic, 9:16 vertical video composition."
@@ -133,9 +133,11 @@ def infer_staging(location, prop, s1_tag="@Mani", s2_tag="@Aqib"):
 
     if "judge" in loc_l or "judge" in prop_l or "court" in loc_l or "court" in prop_l or "phansi" in prop_l or "phansi" in loc_l or "adalat" in loc_l or s1_tag == "@Judge" or s2_tag == "@Judge":
         return (
-            "Physical Staging: In a formal Pakistani High Court courtroom, @Judge sits with dignified authority behind an elevated dark polished mahogany judicial bench with a wooden gavel and legal case law files. "
-            "@Aqib stands inside the traditional wooden accused dock / witness box (kathehra) angled in an open 3/4 profile toward the bench and camera lens, "
-            "resting his hands casually on the wooden railing with an innocent, witty deadpan smirk as he delivers his audacious answer. Both faces and reactions are clearly visible to the camera. Strictly NO outdoor hanging scaffold, NO ropes, NO physical violence."
+            "Physical Staging: Authentic deep-focus Pakistani High Court courtroom with realistic spatial depth and high ceilings. "
+            "@Judge sits with dignified authority high on an elevated dark mahogany judicial bench on a raised dais in the midground, with case law books and wooden gavel. "
+            "Separated by realistic judicial distance (8-10 feet), @Aqib stands inside the wooden accused dock / witness box (kathehra) positioned in the mid-foreground, resting his hands casually on the polished wooden railing. "
+            "Both characters are positioned with natural depth and angled in an open 3/4 profile toward the camera lens, so both faces, eyes, and mouth expressions are clearly visible simultaneously. "
+            "Spacious grand courtroom environment with authentic scale, strictly NO cramped side-by-side squishing, NO outdoor scaffold, NO ropes."
         )
     elif "bike" in loc_l or "bike" in prop_l or "motorcycle" in loc_l or "motorcycle" in prop_l or "petrol" in prop_l:
         return (
@@ -301,12 +303,15 @@ CORE PRINCIPLES (LET THE SCRIPT DICTATE THE SCENE):
    - The other character should naturally fit the joke (e.g. @Mani for buddy jokes, @Judge for court trials, @Doctor for clinics, @Police for police/thana, @Barber for salon, @Shopkeeper for bazaar, @Teacher for classroom, etc.).
    - If the character is not @Aqib or @Mani, provide a concise visual description in 'character_00_desc' (age, clothing, hair, role).
 
-4. PHYSICAL STAGING (CRITICAL FOR GOOGLE FLOW VIDEO):
-   - You MUST write the 'staging' description following these strict cinematographic rules:
-     * Side-profile two-shot in open 3/4 angle: Both characters stand or sit angled toward the camera lens in an open 3/4 stance, so BOTH characters' full faces, eyes, and mouth expressions are clearly visible to the camera at the same time.
+4. PHYSICAL STAGING & REALISTIC SPATIAL DEPTH (CRITICAL FOR 9:16 VERTICAL VIDEO):
+   - In 9:16 vertical video, NEVER squish characters side-by-side into a tiny cramped frame.
+   - For Courtrooms, Offices, Classrooms, or Clinics:
+     * Use realistic spatial depth (Z-axis separation): Place one character deeper in the scene (e.g. @Judge elevated high on the mahogany bench on a raised dais in the midground, 8-10 feet away) and the other character in the mid-foreground (e.g. @Aqib in the wooden accused box / kathehra).
+     * The courtroom or hall must feel grand and spacious with high ceilings, tall windows, and authentic room scale, NOT a tiny cramped box!
+     * Both characters remain angled in an open 3/4 stance toward the camera lens, so BOTH full faces, eyes, and mouth expressions are clearly visible simultaneously.
      * NEITHER character turns their back to the camera.
-     * Describe natural interaction: sitting postures, hands resting, expressive gestures, playful comedic banter.
-     * Strictly NO aggressive face-off, NO confrontational fighting stance.
+     * Describe natural interaction: sitting postures, hands resting on rails/desks, expressive gestures, playful comedic timing.
+     * Strictly NO aggressive face-off, NO confrontational fighting stance, NO physical violence.
 
 5. DIALOGUE & TIMING:
    - Short-Line Safety Expansion: If any dialogue is 1-2 words (like "Kyun?", "Kya?"), expand it to 4-5 words (e.g. "ارے پر کیوں جناب؟ مجھے وجہ تو بتائیں!").
