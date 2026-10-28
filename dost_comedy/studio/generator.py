@@ -217,16 +217,29 @@ def build_image_prompt(speaker_00, speaker_03, location, prop, staging=None, cus
         f"Single still frame keyframe photograph, razor sharp facial focus, natural eyes looking toward scene, perfectly positioned for subsequent video animation."
     )
 
+def extract_clean_spoken_line(raw_line):
+    """Guarantees speech quotes contain ONLY a single clean script (Roman Urdu preferred for Google Flow Veo)."""
+    if not raw_line:
+        return ""
+    m = re.search(r'\(([^)]+)\)', raw_line)
+    if m:
+        candidate = m.group(1).strip()
+        if re.search(r'[a-zA-Z]', candidate):
+            return candidate
+    return re.sub(r'[\(\)\[\]]', '', raw_line).strip()
+
 def build_i2v_prompt(speaker_00, dialogue_00, speaker_03, dialogue_03):
     """Step 2: Motion/Lip-sync animation prompt (Animate the approved starting image)."""
     s1_tag = map_tag(speaker_00)
     s2_tag = map_tag(speaker_03)
+    d0 = extract_clean_spoken_line(dialogue_00)
+    d3 = extract_clean_spoken_line(dialogue_03)
 
     return (
         f"Animate seamlessly from this exact starting keyframe image, strictly maintaining identical character faces, clothing, environment, and lighting. "
         f"Fixed medium-wide stationary eye-level camera, no cuts, no panning, no camera motion. "
-        f"At 00-03 seconds: {s1_tag} speaks first with full natural mouth articulation, serious or comedic facial expression, and talking hand motion: \"{dialogue_00}\", while {s2_tag} listens with responsive reaction. "
-        f"At 03-08 seconds: {s2_tag} delivers their punchline with dramatic comedic facial expression and synchronized mouth movement: \"{dialogue_03}\", while {s1_tag} reacts in bewildered comedic shock or disbelief. "
+        f"At 00-03 seconds: {s1_tag} speaks first with full natural mouth articulation, serious or comedic facial expression, and talking hand motion: \"{d0}\", while {s2_tag} listens with responsive reaction. "
+        f"At 03-08 seconds: {s2_tag} delivers their punchline with dramatic comedic facial expression and synchronized mouth movement: \"{d3}\", while {s1_tag} reacts in bewildered comedic shock or disbelief. "
         f"Continuous 10-second single take, photorealistic smooth motion."
     )
 
@@ -236,6 +249,8 @@ def build_flow_prompt(speaker_00, dialogue_00, speaker_03, dialogue_03, location
     s2_tag = map_tag(speaker_03)
     desc1 = (custom_desc and custom_desc.get(s1_tag)) or get_character_desc(s1_tag)
     desc2 = (custom_desc and custom_desc.get(s2_tag)) or get_character_desc(s2_tag)
+    d0 = extract_clean_spoken_line(dialogue_00)
+    d3 = extract_clean_spoken_line(dialogue_03)
 
     if not staging:
         staging = infer_staging(location, prop, s1_tag, s2_tag)
@@ -249,8 +264,8 @@ def build_flow_prompt(speaker_00, dialogue_00, speaker_03, dialogue_03, location
         f"Setting: {loc_str} with {prop} visible in the scene. "
         f"{staging} "
         f"{DEFAULT_PROMPT_CONSTRAINTS} "
-        f"At 00-03 seconds: {s1_tag} delivers their line with full expressive mouth articulation and talking motion: \"{dialogue_00}\", while {s2_tag} listens with responsive reaction. "
-        f"At 03-08 seconds: {s2_tag} delivers their punchline with dramatic comedic facial expression and synchronized mouth movement: \"{dialogue_03}\", while {s1_tag} reacts in bewildered comedic shock or disbelief. "
+        f"At 00-03 seconds: {s1_tag} delivers their line with full expressive mouth articulation and talking motion: \"{d0}\", while {s2_tag} listens with responsive reaction. "
+        f"At 03-08 seconds: {s2_tag} delivers their punchline with dramatic comedic facial expression and synchronized mouth movement: \"{d3}\", while {s1_tag} reacts in bewildered comedic shock or disbelief. "
         f"Strictly continuous 10-second single take."
     )
 
@@ -313,11 +328,13 @@ CORE PRINCIPLES (LET THE SCRIPT DICTATE THE SCENE):
      * Describe natural interaction: sitting postures, hands resting on rails/desks, expressive gestures, playful comedic timing.
      * Strictly NO aggressive face-off, NO confrontational fighting stance, NO physical violence.
 
-5. DIALOGUE & TIMING:
-   - Short-Line Safety Expansion: If any dialogue is 1-2 words (like "Kyun?", "Kya?"), expand it to 4-5 words (e.g. "ارے پر کیوں جناب؟ مجھے وجہ تو بتائیں!").
-   - Fix grammar and typos. Format: 'اردو مکالمہ (Clean Roman Urdu)'.
-   - speaker_00 speaks at 00-03 seconds (sets up the premise).
-   - speaker_03 delivers the comedic punchline at 03-08 seconds.
+5. CRITICAL VIDEO TIMING & DIALOGUE CONSTRAINTS (ANTI-WORD-EATING RULES):
+   - In Google Flow / Veo, each clip is strictly 10 seconds. Speaking time is only 6-7 seconds.
+   - THE 18-WORD MAXIMUM RULE: The total spoken dialogue across ALL characters in the clip MUST NOT exceed 18 to 20 words!
+   - Short-Line Safety Expansion: If any dialogue is 1-2 words (like "Kyun?", "Kya?"), expand it to 4-5 words (e.g. "Aray par kiyun bhai? Mujhe wajah to batao!").
+   - SINGLE-SCRIPT DIALOGUE FORMAT: Provide dialogue in clean phonetic Roman Urdu ONLY inside the spoken quotation marks (e.g. "Oye Aqib, kya hua?"). NEVER put both Arabic-script Urdu and Roman Urdu translation inside the same spoken quotes!
+   - speaker_00 speaks at 00-03 seconds (sets up the premise, max 8-10 words).
+   - speaker_03 delivers the comedic punchline at 03-08 seconds (max 8-10 words).
 
 Return ONLY valid JSON in this exact schema:
 {{

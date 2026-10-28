@@ -197,6 +197,76 @@ def get_family_speaker_info(name):
             "screen_pos": "on screen-LEFT"
         }
 
+def extract_clean_spoken_line(raw_line):
+    """Guarantees speech quotes contain ONLY a single clean script (Roman Urdu preferred for Google Flow Veo)."""
+    if not raw_line:
+        return ""
+    # If the line has Roman Urdu in parentheses, extract the Roman Urdu for pristine TTS pronunciation
+    m = re.search(r'\(([^)]+)\)', raw_line)
+    if m:
+        candidate = m.group(1).strip()
+        if re.search(r'[a-zA-Z]', candidate):
+            return candidate
+    return re.sub(r'[\(\)\[\]]', '', raw_line).strip()
+
+def split_overcrowded_scenes(raw_scenes, max_words=20, max_speakers=2):
+    """Guarantees NO scene ever exceeds 18-20 words or 2 speakers, preventing Google Flow word-eating."""
+    adjusted_scenes = []
+    for sc in raw_scenes:
+        dialogues = sc.get("dialogues", [])
+        if not dialogues:
+            d00 = sc.get("dialogue_at_00")
+            sp00 = sc.get("speaker_at_00", "Beta")
+            d03 = sc.get("dialogue_at_03")
+            sp03 = sc.get("speaker_at_03", "Abbu")
+            temp_dia = []
+            if d00:
+                temp_dia.append({"timestamp": "0:00", "speaker": sp00, "line": d00})
+            if d03:
+                temp_dia.append({"timestamp": "0:03", "speaker": sp03, "line": d03})
+            dialogues = temp_dia
+                
+        if not dialogues:
+            adjusted_scenes.append(sc)
+            continue
+            
+        current_chunk = []
+        current_words = 0
+        current_speakers = set()
+        
+        for beat in dialogues:
+            sp = beat.get("speaker", "Beta")
+            raw_l = beat.get("line") or beat.get("dialogue", "")
+            spoken_l = extract_clean_spoken_line(raw_l)
+            w_count = len(spoken_l.split())
+            
+            # Check if adding this beat exceeds the 20-word cap or adds a 3rd speaker
+            will_exceed_words = (current_words + w_count > max_words and len(current_chunk) > 0)
+            will_exceed_speakers = (sp not in current_speakers and len(current_speakers) >= max_speakers and len(current_chunk) > 0)
+            
+            if will_exceed_words or will_exceed_speakers:
+                adjusted_scenes.append({
+                    "scene_num": len(adjusted_scenes) + 1,
+                    "dialogues": current_chunk,
+                    "staging": sc.get("staging")
+                })
+                current_chunk = [beat]
+                current_words = w_count
+                current_speakers = {sp}
+            else:
+                current_chunk.append(beat)
+                current_words += w_count
+                current_speakers.add(sp)
+                
+        if current_chunk:
+            adjusted_scenes.append({
+                "scene_num": len(adjusted_scenes) + 1,
+                "dialogues": current_chunk,
+                "staging": sc.get("staging")
+            })
+            
+    return adjusted_scenes
+
 def format_family_multi_scene_prompts(data, wardrobe=None):
     if not wardrobe:
         wardrobe = get_wardrobe_by_id()
@@ -204,7 +274,7 @@ def format_family_multi_scene_prompts(data, wardrobe=None):
     title = data.get("title", "Pakistani Sitcom Episode")
     location = data.get("location", "Living Room Sofa")
     prop = data.get("prop", "Hand prop")
-    raw_scenes = data.get("scenes", [])
+    raw_scenes = split_overcrowded_scenes(data.get("scenes", []))
 
     formatted_scenes = []
 
@@ -212,22 +282,11 @@ def format_family_multi_scene_prompts(data, wardrobe=None):
         num = sc.get("scene_num", len(formatted_scenes) + 1)
         dialogues = sc.get("dialogues", [])
 
-        # Backward compatibility if dialogues list is not present
-        if not dialogues:
-            d00 = sc.get("dialogue_at_00")
-            sp00 = sc.get("speaker_at_00", "Beta")
-            if d00:
-                dialogues.append({"timestamp": "0:00", "speaker": sp00, "line": d00})
-            d03 = sc.get("dialogue_at_03")
-            sp03 = sc.get("speaker_at_03", "Abbu")
-            if d03:
-                dialogues.append({"timestamp": "0:03", "speaker": sp03, "line": d03})
-
-        # Build simple, clean dialogue script format
+        # Build simple, clean dialogue script format with single clean script
         script_lines = []
         for beat in dialogues:
             sp_name = beat.get("speaker", "Beta")
-            line = clean_devanagari(beat.get("line") or beat.get("dialogue", ""))
+            line = extract_clean_spoken_line(clean_devanagari(beat.get("line") or beat.get("dialogue", "")))
             if not line:
                 continue
 
@@ -573,20 +632,19 @@ CRITICAL STRICT RULES:
    - Example 2: English sports/slang terms: "Hat-trick" (cricket bowling hat-trick). When writing Urdu, spell it phonetically as "ہَیٹ ٹرِک (Hat-trick)" or write the Roman Urdu "Hat-trick" clearly so TTS does NOT pronounce it as "Heat-trick" (ہیٹ)!
    - "Ran mureed" -> "رن مرید (Ran mureed)".
    - Fix grammatical slips while preserving raw comedic anger/emotion!
-4. CONVERT TO AUTHENTIC URDU SCRIPT:
-   - Provide the pure Urdu script (Perso-Arabic letters: حروفِ تہجی) followed by clean Roman Urdu in parentheses:
-     Format: "اردو مکالمہ (Clean Roman Urdu)"
+4. SINGLE-SCRIPT DIALOGUE FORMAT (ANTI-TTS BLOAT):
+   - Provide dialogue in clean phonetic Roman Urdu ONLY inside the spoken quotation marks (e.g. "O nalayak! Kya dekh raha hai itnay ghour se? Report card kahan hai?").
+   - NEVER put both Arabic-script Urdu and Roman Urdu translation inside the same spoken quotes, as this doubles token length and causes the AI to cut words!
+   - Provide Urdu script in an optional "urdu_line" or in the title only.
    - STRICTLY NO HINDI / DEVANAGARI!
-5. TIMELINE PACING & SCENE BUDGET (CRITICAL):
-   - In Google Flow, each generated video clip is fixed at 10 seconds.
-   - DO NOT UNNECESSARILY SPLIT A SHORT JOKE INTO MULTIPLE SCENES!
-   - If a script has 3 to 4 short snappy lines between 2 characters in the same room (e.g. Rishta joke: Beta asks, Abbu answers, Beta asks why, Abbu punchline):
-     * KEEP IT IN 1 SINGLE SCENE (10 seconds total)!
-     * Timing: 0:00 (Beta), 0:02 (Abbu), 0:05 (Beta), 0:07 (Abbu punchline).
-     * This avoids dragging or stretching dialogue across 20 seconds!
-   - ONLY split into Scene 1 and Scene 2 IF:
-     * The script has 5 or more dialogue lines, OR
-     * There is an actual location or perspective transition (e.g. Ammi calling downstairs in Scene 1, Beta walking down in Scene 2).
+
+5. CRITICAL VIDEO TIMING & DIALOGUE CONSTRAINTS (ANTI-WORD-EATING RULES):
+   - In Google Flow / Veo, each clip is strictly 10 seconds. Speaking time is only 6-7 seconds.
+   - THE 18-WORD MAXIMUM RULE: The total spoken dialogue across ALL characters in a single scene MUST NOT exceed 18 to 20 words!
+   - DYNAMIC CLIP SPLITTING: Do NOT force a long script into a single scene. Calculate the total words and divide into as many sequential scenes as needed (Scene 1, Scene 2, Scene 3) so that NO scene exceeds 18-20 spoken words!
+   - MAX 2 SPEAKERS PER CLIP: Never allow more than 2 characters to speak in a single clip. If a 3rd character needs to speak (e.g. Ammi reacting), move their dialogue to the next sequential Scene prompt.
+   - PROTECT JOKE TWISTS: If a character is delivering the main setup or punchline (e.g. Beta explaining his report card), give them enough room. Never cram other characters into the same clip if it cuts off the punchline!
+   - PHYSICAL PROP & GAZE TRIGGERS: Whenever a joke relies on a physical object (reading a report card, looking at phone, holding teacup), explicitly instruct the reacting character to look directly at the object BEFORE delivering their line!
    - COMEDIC REACTION & EMOTION LOCK:
      * When @Beta receives bad news, an insult, or a marriage rejection ("inqaar" / "awara loafer"):
        @Beta must NEVER smile or smirk at the end of the clip!
