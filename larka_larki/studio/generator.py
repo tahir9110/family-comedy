@@ -179,8 +179,10 @@ def extract_clean_spoken_line(raw_line):
             return candidate
     return re.sub(r'[\(\)\[\]]', '', raw_line).strip()
 
-def split_overcrowded_scenes(raw_scenes, max_words=20, max_speakers=2):
-    """Guarantees NO scene ever exceeds 18-20 words or 2 speakers, preventing Google Flow word-eating."""
+def split_overcrowded_scenes(raw_scenes, max_words=30, max_speakers=2):
+    """Guarantees snappy 3-beat jokes (<= 30 words between 2 speakers) stay in 1 single 10s clip.
+    Only splits when words exceed 30, or when 3+ different characters try to talk in one clip.
+    """
     adjusted_scenes = []
     for sc in raw_scenes:
         dialogues = sc.get("dialogues", [])
@@ -198,6 +200,17 @@ def split_overcrowded_scenes(raw_scenes, max_words=20, max_speakers=2):
 
         if not dialogues:
             adjusted_scenes.append(sc)
+            continue
+
+        # If it's a short 3-beat joke between <= 2 speakers and <= 32 total words, KEEP AS 1 SINGLE 10S SCENE!
+        all_speakers = set(b.get("speaker", "") for b in dialogues)
+        total_words = sum(len(extract_clean_spoken_line(b.get("line") or b.get("dialogue", "")).split()) for b in dialogues)
+        if len(dialogues) <= 3 and len(all_speakers) <= max_speakers and total_words <= 32:
+            adjusted_scenes.append({
+                "scene_num": len(adjusted_scenes) + 1,
+                "dialogues": dialogues,
+                "staging": sc.get("staging")
+            })
             continue
 
         current_chunk = []

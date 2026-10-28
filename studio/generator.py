@@ -209,8 +209,10 @@ def extract_clean_spoken_line(raw_line):
             return candidate
     return re.sub(r'[\(\)\[\]]', '', raw_line).strip()
 
-def split_overcrowded_scenes(raw_scenes, max_words=20, max_speakers=2):
-    """Guarantees NO scene ever exceeds 18-20 words or 2 speakers, preventing Google Flow word-eating."""
+def split_overcrowded_scenes(raw_scenes, max_words=30, max_speakers=2):
+    """Guarantees snappy 3-beat jokes (<= 30 words between 2 speakers) stay in 1 single 10s clip.
+    Only splits when words exceed 30, or when 3+ different characters try to talk in one clip.
+    """
     adjusted_scenes = []
     for sc in raw_scenes:
         dialogues = sc.get("dialogues", [])
@@ -225,25 +227,36 @@ def split_overcrowded_scenes(raw_scenes, max_words=20, max_speakers=2):
             if d03:
                 temp_dia.append({"timestamp": "0:03", "speaker": sp03, "line": d03})
             dialogues = temp_dia
-                
+
         if not dialogues:
             adjusted_scenes.append(sc)
             continue
-            
+
+        # If it's a short 3-beat joke between <= 2 speakers and <= 32 total words, KEEP AS 1 SINGLE 10S SCENE!
+        all_speakers = set(b.get("speaker", "") for b in dialogues)
+        total_words = sum(len(extract_clean_spoken_line(b.get("line") or b.get("dialogue", "")).split()) for b in dialogues)
+        if len(dialogues) <= 3 and len(all_speakers) <= max_speakers and total_words <= 32:
+            adjusted_scenes.append({
+                "scene_num": len(adjusted_scenes) + 1,
+                "dialogues": dialogues,
+                "staging": sc.get("staging")
+            })
+            continue
+
         current_chunk = []
         current_words = 0
         current_speakers = set()
-        
+
         for beat in dialogues:
             sp = beat.get("speaker", "Beta")
             raw_l = beat.get("line") or beat.get("dialogue", "")
             spoken_l = extract_clean_spoken_line(raw_l)
             w_count = len(spoken_l.split())
-            
-            # Check if adding this beat exceeds the 20-word cap or adds a 3rd speaker
+
+            # Check if adding this beat exceeds the word cap or adds a 3rd speaker
             will_exceed_words = (current_words + w_count > max_words and len(current_chunk) > 0)
             will_exceed_speakers = (sp not in current_speakers and len(current_speakers) >= max_speakers and len(current_chunk) > 0)
-            
+
             if will_exceed_words or will_exceed_speakers:
                 adjusted_scenes.append({
                     "scene_num": len(adjusted_scenes) + 1,
@@ -257,14 +270,14 @@ def split_overcrowded_scenes(raw_scenes, max_words=20, max_speakers=2):
                 current_chunk.append(beat)
                 current_words += w_count
                 current_speakers.add(sp)
-                
+
         if current_chunk:
             adjusted_scenes.append({
                 "scene_num": len(adjusted_scenes) + 1,
                 "dialogues": current_chunk,
                 "staging": sc.get("staging")
             })
-            
+
     return adjusted_scenes
 
 def format_family_multi_scene_prompts(data, wardrobe=None):
@@ -638,15 +651,16 @@ CRITICAL STRICT RULES:
    - Provide Urdu script in an optional "urdu_line" or in the title only.
    - STRICTLY NO HINDI / DEVANAGARI!
 
-5. CRITICAL VIDEO TIMING & DIALOGUE CONSTRAINTS (ANTI-WORD-EATING RULES):
-   - In Google Flow / Veo, each clip is strictly 10 seconds. Speaking time is only 6-7 seconds.
-   - THE 18-WORD MAXIMUM RULE: The total spoken dialogue across ALL characters in a single scene MUST NOT exceed 18 to 20 words!
-   - DYNAMIC CLIP SPLITTING: Do NOT force a long script into a single scene. Calculate the total words and divide into as many sequential scenes as needed (Scene 1, Scene 2, Scene 3) so that NO scene exceeds 18-20 spoken words!
-   - MAX 2 SPEAKERS PER CLIP: Never allow more than 2 characters to speak in a single clip. If a 3rd character needs to speak (e.g. Ammi reacting), move their dialogue to the next sequential Scene prompt.
-   - PROTECT JOKE TWISTS: If a character is delivering the main setup or punchline (e.g. Beta explaining his report card), give them enough room. Never cram other characters into the same clip if it cuts off the punchline!
-   - PHYSICAL PROP & GAZE TRIGGERS: Whenever a joke relies on a physical object (reading a report card, looking at phone, holding teacup), explicitly instruct the reacting character to look directly at the object BEFORE delivering their line!
+5. CRITICAL VIDEO TIMING & DIALOGUE CONSTRAINTS (10-SECOND CLIP BUDGET):
+   - In Google Flow / Veo, each clip is fixed at 10 seconds.
+   - SNAPPY 3-BEAT JOKES IN 1 SINGLE CLIP (10 SECONDS FLAT):
+     * If a joke has 2 to 3 short snappy lines between 2 characters (e.g. Abbu asks at 0-3s, Beta answers at 3-6s, Abbu delivers punchline at 6-10s) with total words <= 24 words, YOU MUST KEEP IT IN 1 SINGLE 10-SECOND SCENE! DO NOT SPLIT IT INTO 2 SCENES!
+     * Example: Abbu: "O nalayak! Itnay ghour se kya dekh raha hai?" (7 words), Beta: "Abbu mubarak ho! Main neechey se first aaya hoon!" (8 words), Abbu: "Abey gadhey! Neechey se first ko fail kehtay hain!" (8 words). Total 23 words = KEEP AS 1 SCENE!
+   - WHEN TO SPLIT:
+     * ONLY split into Scene 1 and Scene 2 if dialogue has 4+ lines, exceeds 25 words, or has 3 different speakers (max 2 speakers per 10s clip).
+   - PHYSICAL PROP & GAZE TRIGGERS: Whenever a joke relies on a physical object (reading report card upside down, phone, cup), explicitly instruct character actions and eyelines.
    - COMEDIC REACTION & EMOTION LOCK:
-     * When @Beta receives bad news, an insult, or a marriage rejection ("inqaar" / "awara loafer"):
+     * When @Beta receives bad news, an insult, or a roast:
        @Beta must NEVER smile or smirk at the end of the clip!
        @Beta must maintain an offended, disappointed, or stunned jaw-dropped expression!
        Only the person delivering the roast/punchline (@Abbu) may chuckle or smile.
