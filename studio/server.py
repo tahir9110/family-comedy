@@ -5,7 +5,7 @@ import time
 import shutil
 from pathlib import Path
 from typing import Optional
-from fastapi import FastAPI, File, UploadFile, Form, HTTPException
+from fastapi import FastAPI, File, UploadFile, Form, HTTPException, Request
 from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
@@ -28,6 +28,15 @@ from studio.generator import (
 )
 
 app = FastAPI(title="Pakistani Sitcom Studio")
+
+# Cache-busting middleware to guarantee NO browser caching
+@app.middleware("http")
+async def add_no_cache_headers(request: Request, call_next):
+    response = await call_next(request)
+    response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate, max-age=0"
+    response.headers["Pragma"] = "no-cache"
+    response.headers["Expires"] = "0"
+    return response
 
 # Static file mounts
 STATIC_DIR = BASE_DIR / "studio" / "static"

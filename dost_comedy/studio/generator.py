@@ -72,7 +72,7 @@ def infer_staging(location, prop):
 
     if "bike" in loc_l or "bike" in prop_l or "motorcycle" in loc_l or "motorcycle" in prop_l or "petrol" in prop_l:
         return (
-            "Physical Staging: @Aqib is physically mounted and seated on the black saddle of the parked motorcycle, "
+            "Physical Staging: @Aqib is actively seated mounted on the black saddle of the parked motorcycle, "
             "his hands resting on the chrome handlebars and feet touching the ground, leaning slightly over the tank with an innocent, tired comedic expression. "
             "@Mani stands right beside the front wheel of the motorbike, leaning casually against the roadside curb with a sarcastic, mocking smirk, "
             "looking down toward @Aqib. Both angled in an open 3/4 stance toward the camera. Friendly buddy humor, NO fighting."
@@ -98,26 +98,54 @@ def infer_staging(location, prop):
             "with casual relaxed body language, expressive hand gestures, and playful buddy camaraderie. Strictly NO stiff face-off."
         )
 
-def build_flow_prompt(speaker_00, dialogue_00, speaker_03, dialogue_03, location, prop, staging=None):
+def map_tag(spk):
+    s = str(spk).lower()
+    if "aqib" in s or "shani" in s:
+        return "@Aqib"
+    elif "mani" in s:
+        return "@Mani"
+    return spk
+
+def build_image_prompt(speaker_00, speaker_03, location, prop, staging=None):
+    """Step 1: Keyframe Image Prompt (Generate still image in Flow first to verify face, bike, and staging)."""
     aqib_desc = CHARACTERS["@Aqib"]["description"]
     mani_desc = CHARACTERS["@Mani"]["description"]
+    if not staging:
+        staging = infer_staging(location, prop)
 
-    # Formatting speaker tags (support aqib, shani fallback)
-    def map_tag(spk):
-        s = spk.lower()
-        if "aqib" in s or "shani" in s:
-            return "@Aqib"
-        elif "mani" in s:
-            return "@Mani"
-        return spk
+    return (
+        f"Cinematic keyframe production still photograph. "
+        f"{aqib_desc} {mani_desc} "
+        f"Setting: Pakistani {location} with {prop} clearly featured in the frame. "
+        f"{staging} "
+        f"{DEFAULT_PROMPT_CONSTRAINTS} "
+        f"Single still frame keyframe photograph, razor sharp facial focus, natural eyes looking toward scene, perfectly positioned for subsequent video animation."
+    )
 
+def build_i2v_prompt(speaker_00, dialogue_00, speaker_03, dialogue_03):
+    """Step 2: Motion/Lip-sync animation prompt (Animate the approved starting image)."""
+    s1_tag = map_tag(speaker_00)
+    s2_tag = map_tag(speaker_03)
+
+    return (
+        f"Animate seamlessly from this exact starting keyframe image, strictly maintaining identical character faces, clothing, motorbike, and lighting. "
+        f"Fixed medium-wide stationary eye-level camera, no cuts, no panning, no camera motion. "
+        f"At 00-03 seconds: {s1_tag} speaks first with full natural mouth articulation, casual friendly smirk, and talking hand motion: \"{dialogue_00}\", while {s2_tag} listens with responsive amused reaction. "
+        f"At 03-08 seconds: {s2_tag} delivers their punchline with dramatic comedic facial expression and synchronized mouth movement: \"{dialogue_03}\", while {s1_tag} reacts in bewildered comedic shock or playful disbelief. "
+        f"Continuous 10-second single take, photorealistic smooth motion."
+    )
+
+def build_flow_prompt(speaker_00, dialogue_00, speaker_03, dialogue_03, location, prop, staging=None):
+    """Direct All-In-One Text-to-Video Prompt."""
+    aqib_desc = CHARACTERS["@Aqib"]["description"]
+    mani_desc = CHARACTERS["@Mani"]["description"]
     s1_tag = map_tag(speaker_00)
     s2_tag = map_tag(speaker_03)
 
     if not staging:
         staging = infer_staging(location, prop)
 
-    prompt = (
+    return (
         f"{aqib_desc} {mani_desc} "
         f"Setting: Pakistani {location} with {prop} visible in the scene. "
         f"{staging} "
@@ -126,9 +154,8 @@ def build_flow_prompt(speaker_00, dialogue_00, speaker_03, dialogue_03, location
         f"At 03-08 seconds: {s2_tag} delivers their punchline with dramatic comedic facial expression and synchronized mouth movement: \"{dialogue_03}\", while {s1_tag} reacts in bewildered comedic shock or playful disbelief. "
         f"Strictly continuous 10-second single take."
     )
-    return prompt
 
-def generate_prompt_for_joke(joke_dict):
+def generate_prompts_package(joke_dict):
     sc1 = joke_dict.get("scene_1", {})
     spk1 = sc1.get("speaker_at_00", "Mani")
     dia1 = sc1.get("dialogue_at_00", "")
@@ -138,4 +165,15 @@ def generate_prompt_for_joke(joke_dict):
     prp = joke_dict.get("prop", "Red Honda CD70 motorbike")
     staging = joke_dict.get("staging", None)
     
-    return build_flow_prompt(spk1, dia1, spk2, dia2, loc, prp, staging)
+    return {
+        "title": joke_dict.get("title", ""),
+        "location": loc,
+        "prop": prp,
+        "image_prompt": build_image_prompt(spk1, spk2, loc, prp, staging),
+        "i2v_prompt": build_i2v_prompt(spk1, dia1, spk2, dia2),
+        "video_prompt": build_flow_prompt(spk1, dia1, spk2, dia2, loc, prp, staging)
+    }
+
+def generate_prompt_for_joke(joke_dict):
+    pkg = generate_prompts_package(joke_dict)
+    return pkg["video_prompt"]
